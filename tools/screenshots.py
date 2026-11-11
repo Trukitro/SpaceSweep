@@ -85,7 +85,12 @@ def _declare():
     g.DeleteDC.argtypes = [vp]
 
 
-def capture(hwnd, path):
+def capture(hwnd, path, js=None):
+    if js:  # dialogs that open on their own (e.g. "What's new" after an update) must not cover the shot
+        js("document.querySelectorAll('.modal-back').forEach(m => m.remove()); "
+           "document.querySelectorAll('.toast').forEach(t => t.remove());", 0.6)
+        if js("document.querySelectorAll('.modal-back').length"):
+            raise RuntimeError("a dialog is still open")
     _declare()
     user32, gdi32 = ctypes.windll.user32, ctypes.windll.gdi32
     rect = wintypes.RECT()
@@ -145,21 +150,22 @@ def main():
     def run():
         try:
             until("typeof S !== 'undefined' && S.drives && S.drives.length > 0")
+            time.sleep(3)  # let boot hooks finish ("What's new" dialog, update check) before shooting
             js(f"S.lang = '{args.lang}'; S.theme = '{args.theme}'; applyTheme(); renderAll(); go('home');", 1.5)
             _declare()
             hwnd = ctypes.windll.user32.FindWindowW(None, "SpaceSweep")
             ctypes.windll.user32.SetForegroundWindow(hwnd)
-            capture(hwnd, os.path.join(OUT, "home.png"))
+            capture(hwnd, os.path.join(OUT, "home.png"), js)
 
             js("go('cleanup'); cleanupScan();", 1)
             until("S.cl.result !== null")
             js("document.querySelector('.main').scrollTop = 0;", 1)
-            capture(hwnd, os.path.join(OUT, "cleanup.png"))
+            capture(hwnd, os.path.join(OUT, "cleanup.png"), js)
 
             js(f"S.dl.folder = {dl!r}; S.dl.res = null; renderDownloads(); go('downloads'); downloadsScan();", 1)
             until("S.dl.res !== null")
             js("", 1)
-            capture(hwnd, os.path.join(OUT, "downloads.png"))
+            capture(hwnd, os.path.join(OUT, "downloads.png"), js)
 
             js(f"S.ph.folders = [{pics!r}]; S.ph.threshold = '8'; renderPhotos(); go('photos'); photosScan();", 1)
             until("S.ph.res !== null")
@@ -169,10 +175,10 @@ def main():
                 print("photos:", js("JSON.stringify({groups: S.ph.res.groups.length, thumbs: S.ph.thumbs.size, "
                                     "ok: [...S.ph.thumbs.values()].filter(Boolean).length, imgs: $$('#phBody img').length})"))
             js("document.querySelector('#phBody').scrollIntoView();", 1)
-            capture(hwnd, os.path.join(OUT, "photos.png"))
+            capture(hwnd, os.path.join(OUT, "photos.png"), js)
 
             js("go('auto');", 2)
-            capture(hwnd, os.path.join(OUT, "automatic.png"))
+            capture(hwnd, os.path.join(OUT, "automatic.png"), js)
         finally:
             window.destroy()
 
