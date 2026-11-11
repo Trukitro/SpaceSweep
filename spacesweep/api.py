@@ -175,6 +175,47 @@ class Api:
             return automation.run_check() if mode == "check" else automation.run_clean_safe()
         return self._jobs.start("auto-run", run, mode)
 
+    # ------------------------------------------------------------ inventory (v0.4)
+    def inv_programs(self):
+        from . import inventory
+        return self._jobs.start("programs", lambda job: inventory.programs(job))
+
+    def inv_uninstall(self, program_id, command):
+        from . import inventory
+        return inventory.uninstall_program(program_id, command)
+
+    def inv_games(self):
+        from . import inventory
+        return self._jobs.start("games", lambda job: inventory.games(job))
+
+    def inv_game_uninstall(self, platform, game_id):
+        from . import inventory
+        return inventory.game_uninstall(platform, str(game_id))
+
+    def inv_devtools(self):
+        from . import inventory
+
+        def run(job):
+            data = inventory.devtools(job)
+            data["models"] = inventory.ai_models()
+            return data
+        return self._jobs.start("devtools", run)
+
+    def inv_docker_prune(self, all_images=False):
+        from . import inventory
+        return self._jobs.start("docker-prune", lambda job: inventory.docker_prune(bool(all_images)))
+
+    def inv_wsl_sparse(self, name):
+        from . import inventory
+        names = {d["name"] for d in inventory.wsl_distros() if not d.get("docker")}
+        if name not in names:
+            raise ValueError("unknown distro")
+        return self._jobs.start("wsl-sparse", lambda job: inventory.wsl_set_sparse(name))
+
+    def inv_ollama_rm(self, name):
+        from . import inventory
+        return inventory.ollama_rm(name)
+
     def delete(self, paths, permanent=False):
         def run(job, paths, permanent):
             job.update(message="deleting", progress=-1)

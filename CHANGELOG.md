@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0 — 2026-11-11
+
+- **Programs**: every installed program with size, which is measured when Windows doesn't record it, plus install date and drive. Repeated versions are grouped (Windows SDK, Visual Studio Build Tools, Java, Python, SSMS…), and the page says which groups are normal and must stay (Visual C++ redistributables, .NET runtimes). Uninstall opens the program's own uninstaller, re-checked against the registry first.
+- **Games**: Steam (all libraries), Epic, GOG, Ubisoft and Xbox games with size, drive and **last played** for Steam. Shows how much space games untouched for 90+ days take. Uninstall goes through the game's launcher.
+- **Dev tools & AI**:
+  - Docker reclaimable space with a prune button.
+  - WSL/Docker virtual disks, with one click to enable WSL sparse mode.
+  - Leftovers: old LM Studio `llama.cpp` engines (keeps the newest per variant and the selected one), obsolete VS Code extension folders, old JetBrains versions, Cargo/pnpm/Yarn/Gradle/Maven caches, Android virtual phones.
+  - Every local AI model on its own: LM Studio, Hugging Face, and Ollama via `ollama rm`.
+
 ## 0.3.0 — 2026-11-11
 
 - **Automatic upkeep** page, run by Windows Task Scheduler. Nothing stays resident and no administrator rights are needed:

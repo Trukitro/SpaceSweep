@@ -23,6 +23,9 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 - **Disk explorer**: scans a whole drive or folder (parallel `os.scandir`), then lets you drill into folders instantly. It also shows the largest files, space per file type, and how much used space could not be read (restore points, system files).
 - **History**: every scan keeps a small summary (folders of 50 MB+, 4 levels deep), so you can compare two dates and see **what grew**, down to the most specific folder. It also charts used space over time and shows which caches refill fastest between Cleanup analyses.
 - **Code projects**: finds `node_modules`, Python virtual environments, Rust `target`, .NET `bin/obj`, Gradle and JS build caches inside your projects. It shows how many days each project has been untouched and pre-selects only the inactive ones, with the command that recreates each folder.
+- **Programs**: size, install date and drive of everything installed. Repeated versions are grouped, and the page tells you which are leftovers (old SDKs, Build Tools, Java, Python) and which must stay (Visual C++ redistributables, .NET runtimes). Uninstall runs the program's own uninstaller.
+- **Games**: Steam (every library), Epic, GOG, Ubisoft and Xbox, with size, drive and *last played* for Steam. Sort by "time since played" to find the 100 GB game you haven't opened in a year.
+- **Dev tools & AI**: Docker reclaimable space and prune, WSL disks with *sparse mode*, old LM Studio engines, obsolete VS Code extensions, old JetBrains versions, package caches, and every local AI model (LM Studio, Ollama, Hugging Face) on its own.
 - **Downloads**: finds exact copies (`setup (1).exe`), unfinished downloads, old installers and zips you already extracted. Sorts loose files into folders by type, **with undo**.
 - **My folders**: analyzes Documents, Pictures, Videos, Music, Desktop or any folder: space per file type, biggest subfolders, biggest files, big files untouched for 2+ years. It flags likely leftovers: `node_modules`, Python virtual environments, Rust `target` folders, `.bak` backups you already zipped, Office lock files, big logs. It can also sort loose photos and videos into `Year\Year-Month` folders using the camera's EXIF date, **with undo**.
 - **Duplicates**: byte-for-byte identical files across any set of folders. Files are compared by size, then the first and last 64 KB, then a full BLAKE2 hash. Hard links are ignored, and at least one copy of each group is always kept.
@@ -96,6 +99,7 @@ spacesweep/
   organizer.py   Downloads-by-type and photos-by-date plans, apply and undo
   duplicates.py  3-stage exact duplicate finder
   history.py     snapshots, "what grew" comparison, free-space log
+  inventory.py   programs, games, developer tools, local AI models
   automation.py  scheduled tasks (Task Scheduler XML), notifications, Downloads rules
   devprojects.py regenerable folders in code projects
   imaging.py     PNG/ICO encoding without Pillow
