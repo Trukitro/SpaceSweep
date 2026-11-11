@@ -9,8 +9,9 @@ from .api import Api
 
 
 def ui_dir():
-    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    return os.path.join(base, "ui")
+    if hasattr(sys, "_MEIPASS"):  # PyInstaller build
+        return os.path.join(sys._MEIPASS, "spacesweep", "ui")
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "ui")
 
 
 def main(argv=None):

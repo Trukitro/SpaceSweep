@@ -11,7 +11,7 @@ python -m pip install --upgrade pyinstaller -r requirements.txt
 $mode = if ($OneFile) { "--onefile" } else { "--onedir" }
 python -m PyInstaller --noconfirm --clean --windowed $mode `
     --name SpaceSweep `
-    --add-data "ui;ui" `
+    --add-data "spacesweep/ui;spacesweep/ui" `
     --exclude-module tkinter `
     SpaceSweep.pyw
 

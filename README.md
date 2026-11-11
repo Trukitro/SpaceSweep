@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="ui/logo.svg" alt="SpaceSweep logo" width="120">
+  <img src="spacesweep/ui/logo.svg" alt="SpaceSweep logo" width="120">
 </p>
 
 <h1 align="center">SpaceSweep</h1>
@@ -37,12 +37,16 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 
 ```bash
 git clone https://github.com/Trukitro/SpaceSweep.git
-cd SpaceSweep
-pip install -r requirements.txt
-python -m spacesweep
+python -m pip install -e SpaceSweep
 ```
 
-Double-clicking `SpaceSweep.pyw` starts it without a console window.
+That installs the `spacesweep` command, so from then on it starts from **any** terminal and any folder:
+
+```bash
+spacesweep
+```
+
+`python -m spacesweep` works too. Double-clicking `SpaceSweep.pyw` starts it without a console window.
 
 ### Build a standalone app
 
@@ -56,9 +60,9 @@ Double-clicking `SpaceSweep.pyw` starts it without a console window.
 ## Usage
 
 ```bash
-python -m spacesweep              # native window
-python -m spacesweep --browser    # same UI in your web browser (also the automatic fallback without WebView2)
-python -m spacesweep --debug      # native window with developer tools
+spacesweep              # native window
+spacesweep --browser    # same UI in your web browser (also the automatic fallback without WebView2)
+spacesweep --debug      # native window with developer tools
 ```
 
 Most features work as a normal user. Cleaning **Windows Update downloads**, the **system Temp folder** and **Delivery Optimization** needs administrator rights. Use *Restart as admin* in the sidebar to get them.
@@ -81,7 +85,7 @@ spacesweep/
   winapi.py      ctypes wrappers: drives, Recycle Bin, known folders, UAC
   jobs.py        background jobs with progress and cancel
   server.py      --browser mode (localhost only, per-run token)
-ui/              index.html, app.css, app.js, i18n.js, logo.svg
+  ui/            index.html, app.css, app.js, i18n.js, logo.svg
 tests/           unit tests (temp folders only)
 ```
 

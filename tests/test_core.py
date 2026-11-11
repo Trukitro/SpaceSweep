@@ -251,7 +251,7 @@ class ServerTests(unittest.TestCase):
         from spacesweep import server
         from spacesweep.api import Api
         from http.server import ThreadingHTTPServer
-        ui = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ui")
+        ui = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "spacesweep", "ui")
         server.UI_DIR = ui
         httpd = ThreadingHTTPServer(("127.0.0.1", 0), None)
         port = httpd.server_address[1]
