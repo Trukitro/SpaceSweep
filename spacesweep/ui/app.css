@@ -243,6 +243,24 @@ td.act { width: 1%; white-space: nowrap; text-align: right; }
 .group-row .path { flex: 1; }
 .group-row.keep .path { color: var(--text); }
 
+.news h3.news-ver { font-size: 16px; margin: 20px 0 6px; padding-top: 14px; border-top: 1px solid var(--line); }
+.news h3.news-ver:first-of-type { border-top: 0; padding-top: 0; }
+.news h4 { margin: 12px 0 4px; font-size: 13.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.news ul { margin: 4px 0; padding-left: 20px; }
+.news li { margin: 3px 0; line-height: 1.5; }
+.news p { margin: 6px 0; }
+.modal .news { max-height: 50vh; overflow: auto; }
+.risk-0 { background: var(--safe-soft); color: var(--safe); }
+.risk-1 { background: var(--info-soft); color: var(--info); }
+.risk-2 { background: var(--warn-soft); color: var(--warn); }
+.risk-3 { background: var(--danger-soft); color: var(--danger); }
+.plan-step { display: grid; grid-template-columns: 28px 1fr auto auto; gap: 12px; align-items: center; padding: 12px; border-top: 1px solid var(--line); }
+.plan-step:first-child { border-top: 0; }
+.plan-step .n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--panel-2); font-weight: 650; font-size: 12.5px; }
+.plan-step.reached .n { background: var(--accent); color: #fff; }
+.target-bar { position: relative; height: 14px; background: var(--bar); border-radius: 99px; overflow: hidden; margin: 10px 0 4px; }
+.target-bar i { position: absolute; top: 0; bottom: 0; left: 0; background: var(--accent); }
+.target-bar b { position: absolute; top: -3px; bottom: -3px; width: 3px; background: var(--text); }
 .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 10px; }
 .photo { display: flex; flex-direction: column; gap: 4px; border: 2px solid transparent; border-radius: 10px; padding: 6px; cursor: pointer; background: var(--panel-2); min-width: 0; }
 .photo:has(input:checked) { border-color: var(--danger); }

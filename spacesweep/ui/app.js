@@ -189,6 +189,7 @@ function applyTheme() {
 }
 /* Pages added in ui/pages/*.js push their renderer here; scopes register re-render / forget hooks. */
 const PAGE_RENDERERS = [];
+const BOOT_HOOKS = [];
 const BARS = {};
 const SCOPE_RENDER = {};
 const FORGET = {};
@@ -234,10 +235,10 @@ function driveCard(d) {
 }
 function renderHome() {
   // [page, icon, label key]; descriptions are home.f_<page>
-  const feats = [["cleanup", "sweep", "nav.cleanup"], ["projects", "code", "proj.nav"], ["programs", "app", "prog.nav"],
+  const feats = [["plan", "check", "plan.nav"], ["cleanup", "sweep", "nav.cleanup"], ["compress", "package", "cmp.nav"], ["projects", "code", "proj.nav"], ["programs", "app", "prog.nav"],
     ["games", "game", "games.nav"], ["devtools", "brain", "dev.nav"], ["duplicates", "copy", "nav.duplicates"],
     ["photos", "image", "ph.nav"], ["explorer", "pie", "nav.explorer"], ["history", "history", "hist.nav"],
-    ["downloads", "download", "nav.downloads"], ["folders", "folder", "nav.folders"], ["move", "disk", "mv.nav"], ["auto", "clock", "auto.nav"]];
+    ["downloads", "download", "nav.downloads"], ["folders", "folder", "nav.folders"], ["move", "disk", "mv.nav"], ["auto", "clock", "auto.nav"], ["news", "history", "news.nav"]];
   $("#page-home").innerHTML = head(t("home.title"), t("home.sub")) + `<div id="homeHint"></div>` +
     `<div class="section-title"><h3>${t("home.drives")}</h3></div><div class="drives">${S.drives.map(driveCard).join("")}</div>
      <div class="section-title"><h3>${t("home.sections")}</h3></div>
@@ -824,6 +825,7 @@ async function boot() {
     applyTheme();
     S.drives = await api("drives");
     renderAll();
+    BOOT_HOOKS.forEach(fn => { try { fn(); } catch (err) { console.error(err); } });
   } catch (e) {
     document.body.innerHTML = `<pre style="padding:20px">${esc(e.stack || e)}</pre>`;
   }

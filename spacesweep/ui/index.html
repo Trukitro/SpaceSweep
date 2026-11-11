@@ -52,8 +52,10 @@
   <aside class="side">
     <div class="brand"><img src="logo.svg" alt=""><div><b>SpaceSweep</b><small id="version"></small></div></div>
     <button class="nav active" data-page="home"><svg class="ic"><use href="#i-home"/></svg><span data-t="nav.home"></span></button>
+    <button class="nav" data-page="plan"><svg class="ic"><use href="#i-check"/></svg><span data-t="plan.nav"></span></button>
     <div class="nav-group" data-t="nav.g_free"></div>
     <button class="nav" data-page="cleanup"><svg class="ic"><use href="#i-sweep"/></svg><span data-t="nav.cleanup"></span></button>
+    <button class="nav" data-page="compress"><svg class="ic"><use href="#i-package"/></svg><span data-t="cmp.nav"></span></button>
     <button class="nav" data-page="projects"><svg class="ic"><use href="#i-code"/></svg><span data-t="proj.nav"></span></button>
     <button class="nav" data-page="programs"><svg class="ic"><use href="#i-app"/></svg><span data-t="prog.nav"></span></button>
     <button class="nav" data-page="games"><svg class="ic"><use href="#i-game"/></svg><span data-t="games.nav"></span></button>
@@ -69,6 +71,7 @@
     <button class="nav" data-page="move"><svg class="ic"><use href="#i-disk"/></svg><span data-t="mv.nav"></span></button>
     <div class="nav-group" data-t="nav.g_keep"></div>
     <button class="nav" data-page="auto"><svg class="ic"><use href="#i-clock"/></svg><span data-t="auto.nav"></span></button>
+    <button class="nav" data-page="news"><svg class="ic"><use href="#i-history"/></svg><span data-t="news.nav"></span></button>
     <div class="side-foot">
       <div class="admin-pill" id="adminPill"><span class="dot"></span><span id="adminText"></span></div>
       <button class="btn sm hidden" id="btnAdmin"><svg class="ic"><use href="#i-shield"/></svg><span data-t="admin.relaunch"></span></button>
@@ -92,6 +95,9 @@
     <section class="page" id="page-devtools"></section>
     <section class="page" id="page-move"></section>
     <section class="page" id="page-photos"></section>
+    <section class="page" id="page-plan"></section>
+    <section class="page" id="page-compress"></section>
+    <section class="page" id="page-news"></section>
   </main>
 </div>
 <div class="toasts" id="toasts"></div>
@@ -105,5 +111,8 @@
 <script src="pages/devtools.js"></script>
 <script src="pages/move.js"></script>
 <script src="pages/photos.js"></script>
+<script src="pages/plan.js"></script>
+<script src="pages/compress.js"></script>
+<script src="pages/news.js"></script>
 </body>
 </html>

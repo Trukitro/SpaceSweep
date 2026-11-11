@@ -21,6 +21,8 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 
 ## Features
 
+- **Free N GB assistant**: tell it how much space you need and it builds one plan from every source below, ordered from "nothing lost" to "needs reinstalling", with a running total toward your goal.
+- **Compress without deleting**: transparent NTFS compression (LZX/XPRESS, like `compact /EXE` and CompactOS) for installed games and rarely-changing tools. It measures the real size on disk, estimates the saving first, and can be reverted.
 - **Cleanup**: measures 20+ known space hogs and sorts them into:
   - *Safe to delete*: temp files, NVIDIA/AMD/DirectX shader caches, used driver installers, Windows Update downloads, crash dumps, thumbnail and browser caches, dev caches (pip, npm, yarn, uv, NuGet, Go).
   - *Your call*: Recycle Bin, game shader caches, Android emulator images, Spotify cache, Unity installers.
@@ -42,6 +44,7 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 - **WinSxS with DISM** (admin): the official, safe way to shrink the Windows component store.
 - **Automatic upkeep**: optional Windows scheduled tasks, with no resident process and no admin rights. A daily low-space notification, a weekly cleanup of the safe group, and Downloads rules (old installers, unfinished downloads and exact copies go to the Recycle Bin), with a log of everything that ran.
 - **Safe by default**: your own files go to the Recycle Bin unless you tick *delete permanently*. Caches are deleted for good because they rebuild themselves. Files in use are skipped, never forced, and SpaceSweep refuses to delete drive roots, Windows folders or your profile folders.
+- **What's new and updates**: the changelog inside the app, a summary of what changed after each update, and an optional once-a-day check for new versions on GitHub Releases.
 - **Light / dark / system theme** and **Spanish / English**, both remembered.
 
 ---
@@ -121,6 +124,10 @@ spacesweep/
   mover.py       move a folder to another drive behind a junction (verified, undoable)
   winmaint.py    WinSxS analysis and cleanup through DISM
   photos.py      similar photos: shell thumbnails via COM + dHash + banded grouping
+  compress.py    transparent NTFS compression (compact.exe /EXE) with size-on-disk and estimate
+  planner.py     "free N GB" plan across every source
+  updates.py     GitHub Releases check and the bundled changelog
+  CHANGELOG.md   changelog shown on the What's new page
   automation.py  scheduled tasks (Task Scheduler XML), notifications, Downloads rules
   devprojects.py regenerable folders in code projects
   imaging.py     PNG/ICO encoding without Pillow

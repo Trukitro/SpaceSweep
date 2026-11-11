@@ -28,6 +28,7 @@ $mode = if ($OneFile) { "--onefile" } else { "--onedir" }
     --name SpaceSweep `
     --icon $icon `
     --add-data "spacesweep/ui;spacesweep/ui" `
+    --add-data "spacesweep/CHANGELOG.md;spacesweep" `
     --exclude-module tkinter `
     SpaceSweep.pyw
 if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }

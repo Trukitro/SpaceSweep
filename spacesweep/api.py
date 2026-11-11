@@ -31,6 +31,7 @@ class Api:
             "windows": winapi.IS_WINDOWS,
             "lang": lang,
             "theme": settings.get("theme", "system"),
+            "check_updates": settings.get("check_updates", True),
             "folders": winapi.user_folders(),
             "home": os.path.expanduser("~"),
             "native": self._window is not None,
@@ -39,7 +40,7 @@ class Api:
 
     def save_settings(self, data):
         settings = fsutil.load_json("settings.json", {})
-        settings.update({k: v for k, v in (data or {}).items() if k in ("lang", "theme")})
+        settings.update({k: v for k, v in (data or {}).items() if k in ("lang", "theme", "check_updates")})
         fsutil.save_json("settings.json", settings)
         return settings
 
@@ -160,6 +161,45 @@ class Api:
         if not os.path.isfile(path):
             return None
         return photos.thumb_data_uri(path, int(px))
+
+    # ------------------------------------------------------------ compress / planner / updates (v0.7)
+    def compress_candidates(self):
+        from . import compress
+        return self._jobs.start("compress-candidates", lambda job: compress.candidates(job))
+
+    def compress_status(self, path):
+        from . import compress
+        return self._jobs.start("compress-status", compress.status, self._folder(path))
+
+    def compress_run(self, path, algo="LZX"):
+        from . import compress
+        return self._jobs.start("compress", compress.compress, self._folder(path), algo)
+
+    def compress_undo(self, path):
+        from . import compress
+        return self._jobs.start("decompress", compress.decompress, self._folder(path))
+
+    def plan_build(self, drive_root, target_gb):
+        from . import planner
+        return self._jobs.start("plan", planner.build, drive_root, int(float(target_gb) * 1024 ** 3))
+
+    def update_check(self, force=False):
+        from . import updates
+        return updates.check(bool(force))
+
+    def changelog(self):
+        from . import updates
+        return updates.changelog()
+
+    def whats_new(self):
+        from . import updates
+        return updates.whats_new()
+
+    def open_url(self, url):
+        import webbrowser
+        if not str(url).startswith("https://github.com/Trukitro/SpaceSweep"):
+            raise ValueError("only SpaceSweep release links are opened")
+        return webbrowser.open(url)
 
     # ------------------------------------------------------------ component store (v0.5)
     def dism_analyze(self):
