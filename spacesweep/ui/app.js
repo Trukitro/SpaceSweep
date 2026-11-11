@@ -237,7 +237,7 @@ function renderHome() {
   // [page, icon, label key]; descriptions are home.f_<page>
   const feats = [["plan", "check", "plan.nav"], ["cleanup", "sweep", "nav.cleanup"], ["compress", "package", "cmp.nav"], ["projects", "code", "proj.nav"], ["programs", "app", "prog.nav"],
     ["games", "game", "games.nav"], ["devtools", "brain", "dev.nav"], ["duplicates", "copy", "nav.duplicates"],
-    ["photos", "image", "ph.nav"], ["explorer", "pie", "nav.explorer"], ["history", "history", "hist.nav"],
+    ["photos", "image", "ph.nav"], ["recordings", "game", "rec.nav"], ["explorer", "pie", "nav.explorer"], ["history", "history", "hist.nav"],
     ["downloads", "download", "nav.downloads"], ["folders", "folder", "nav.folders"], ["move", "disk", "mv.nav"], ["auto", "clock", "auto.nav"], ["news", "history", "news.nav"]];
   $("#page-home").innerHTML = head(t("home.title"), t("home.sub")) + `<div id="homeHint"></div>` +
     `<div class="section-title"><h3>${t("home.drives")}</h3></div><div class="drives">${S.drives.map(driveCard).join("")}</div>
@@ -321,12 +321,14 @@ function renderCleanupBody() {
       <div class="tbl-wrap"><table><thead><tr><th class="chk"></th><th>${t("common.what")}</th><th class="num">${t("common.size")}</th>
       <th>${t("common.where")}</th><th>${t("common.effect")}</th><th></th></tr></thead><tbody>${items.map(clRow).join("")}</tbody></table></div>`;
   }
+  html += `<div id="recycleCard"></div>`;
   if (c.result.is_system) html += `<div id="dismCard"></div>`;
   html += `<div class="sticky-actions"><span class="grow small muted">${t("cleanup.confirm_note")}</span>
     <button class="btn primary" id="clFree" data-act="cl-free" disabled></button></div>`;
   el.innerHTML = html;
   renderCleanupStats();
   if (typeof renderDismCard === "function") renderDismCard();
+  if (typeof renderRecycleCard === "function") renderRecycleCard();
 }
 function renderCleanupReport() {
   const r = S.cl.report, el = $("#clReport");

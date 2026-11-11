@@ -79,6 +79,12 @@ class FsutilTests(TempCase):
         res = fsutil.delete_paths([f], permanent=False)
         self.assertTrue(res[0]["ok"], res)
         self.assertFalse(os.path.exists(f))
+        # take our test file back out of the real Recycle Bin
+        from spacesweep import recyclebin
+        mine = [i for i in recyclebin.items() if os.path.normcase(i["original"]) == os.path.normcase(f)]
+        self.assertEqual(len(mine), 1)
+        os.remove(mine[0]["data"])
+        os.remove(mine[0]["info"])
 
     def test_unique_target(self):
         write(self.p("f.txt"))

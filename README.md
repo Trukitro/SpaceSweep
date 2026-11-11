@@ -39,6 +39,8 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 - **My folders**: analyzes Documents, Pictures, Videos, Music, Desktop or any folder: space per file type, biggest subfolders, biggest files, big files untouched for 2+ years. It flags likely leftovers: `node_modules`, Python virtual environments, Rust `target` folders, `.bak` backups you already zipped, Office lock files, big logs. It can also sort loose photos and videos into `Year\Year-Month` folders using the camera's EXIF date, **with undo**.
 - **Duplicates**: byte-for-byte identical files across any set of folders. Files are compared by size, then the first and last 64 KB, then a full BLAKE2 hash. Hard links are ignored, and at least one copy of each group is always kept.
 - **Similar photos**: bursts, edited copies and resized versions, found with a 64-bit difference hash computed on the thumbnails Windows already makes (any format Explorer can preview, with no image library). Results are shown as thumbnails, and *keep the largest* selects the rest.
+- **Recordings**: Xbox Game Bar, NVIDIA ShadowPlay/Instant Replay, OBS and Steam clips and screenshots, with size and age per source.
+- **Smart Recycle Bin**: empties only what has been in the Recycle Bin longer than N days, so recent deletions stay recoverable. Also available as part of the weekly automatic cleanup.
 - **Move to another drive**: copies a heavy folder (AI models, SDKs, build caches) to another drive, verifies it, and leaves a directory junction behind, so programs keep working with the same path. It can be undone with *Bring back*.
 - **Duplicates against a backup**: frees files on C: that already have an identical copy in your backup folder. The backup is never touched.
 - **WinSxS with DISM** (admin): the official, safe way to shrink the Windows component store.
@@ -127,6 +129,8 @@ spacesweep/
   compress.py    transparent NTFS compression (compact.exe /EXE) with size-on-disk and estimate
   planner.py     "free N GB" plan across every source
   updates.py     GitHub Releases check and the bundled changelog
+  recyclebin.py  Recycle Bin $I/$R parsing, empty-older-than
+  recordings.py  capture folders of Game Bar, NVIDIA, OBS and Steam
   CHANGELOG.md   changelog shown on the What's new page
   automation.py  scheduled tasks (Task Scheduler XML), notifications, Downloads rules
   devprojects.py regenerable folders in code projects

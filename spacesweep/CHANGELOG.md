@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0 — 2026-11-11
+
+- **Recordings** page: clips and screenshots from Xbox Game Bar, NVIDIA ShadowPlay / Instant Replay (path read from its settings), OBS Studio (every profile's recording path) and Steam. Shows size and age per source, with one click to select everything older than 90 days.
+- **Smart Recycle Bin** (in Cleanup): reads each item's deletion date and empties only what has been there longer than 7, 30, 90 or 365 days. Recent deletions stay recoverable. The weekly automatic cleanup can do this too.
+- **Teams, Slack and Zoom caches** added to *Safe to delete*.
+- **Thunderbird search index** (`global-messages-db.sqlite`, often several GB) added to *Your call*. Your mail is not touched.
+- **WhatsApp, Telegram and Thunderbird media** shown with step-by-step instructions to shrink them from each app. SpaceSweep never deletes chat media itself.
+- Tests no longer leave a test file in your real Recycle Bin.
+
 ## 0.7.0 — 2026-11-11
 
 - **Free N GB assistant**: say how much space you need and SpaceSweep builds one plan across all its sources (Cleanup, Recycle Bin, code projects, dev-tool leftovers, compression, moving to another drive, long-unplayed games). Steps are ordered from "nothing lost" to "needs reinstalling", with a running total toward your goal and a button to each page.

@@ -7,7 +7,7 @@ Object.assign(I18N.es, { auto: {
   alert: "Aviso de poco espacio", alert_d: "Te muestra una notificación de Windows cuando el disco del sistema baja del porcentaje libre que elijas. Máximo un aviso al día.",
   percent: "Avisar con menos de", free_pct: "% libre", check_at: "Revisar cada día a las", after_logon: "y 5 minutos después de iniciar sesión",
   weekly: "Limpieza semanal", weekly_d: "Borra lo del grupo «Seguro de borrar» de Limpieza (cachés y temporales que se regeneran). Lo que requiere administrador se omite. Te avisa cuánto liberó.",
-  day: "Día", at: "a las",
+  day: "Día", at: "a las", recycle: "También vaciar de la Papelera lo que lleve más de", recycle_d: "0 = no tocar la Papelera",
   dl: "Reglas para Descargas", dl_d: "Se aplican en la revisión diaria. Lo que se quita va a la Papelera, así que puedes recuperarlo.",
   dl_partial: "Descargas incompletas de más de", dl_inst: "Instaladores de más de", dl_dups: "Copias exactas («archivo (1).exe»)", dl_org: "Ordenar los archivos sueltos por tipo",
   days_u: "días", save: "Guardar y programar", saved: "Guardado. Tareas de Windows actualizadas.", task_err: "No se pudo programar la tarea: {msg}",
@@ -25,7 +25,7 @@ Object.assign(I18N.en, { auto: {
   alert: "Low-space alert", alert_d: "Shows a Windows notification when the system drive drops below the free percentage you choose. At most one alert a day.",
   percent: "Alert below", free_pct: "% free", check_at: "Check every day at", after_logon: "and 5 minutes after you sign in",
   weekly: "Weekly cleanup", weekly_d: "Deletes the Cleanup \"Safe to delete\" group (caches and temp files that rebuild themselves). Items needing administrator are skipped. Tells you how much it freed.",
-  day: "Day", at: "at",
+  day: "Day", at: "at", recycle: "Also empty Recycle Bin items older than", recycle_d: "0 = leave the Recycle Bin alone",
   dl: "Downloads rules", dl_d: "Applied by the daily check. Removed files go to the Recycle Bin, so you can restore them.",
   dl_partial: "Unfinished downloads older than", dl_inst: "Installers older than", dl_dups: "Exact copies ('file (1).exe')", dl_org: "Sort loose files by type",
   days_u: "days", save: "Save and schedule", saved: "Saved. Windows tasks updated.", task_err: "Could not schedule the task: {msg}",
@@ -63,7 +63,9 @@ function renderAuto() {
     <div class="card"><div class="row"><h2 class="grow">${icon("sweep")}${t("auto.weekly")}</h2>${toggle("auWeekly", f.weekly_clean.enabled)}</div>
       <p class="lead">${t("auto.weekly_d")}</p>
       <div class="row">${t("auto.day")} <select id="auDay">${Object.entries(I18N[S.lang].auto.days).map(([k, v]) => `<option value="${k}" ${f.weekly_clean.day === k ? "selected" : ""}>${v}</option>`).join("")}</select>
-        ${t("auto.at")} ${timeIn("auWeeklyTime", f.weekly_clean.time)}</div></div>
+        ${t("auto.at")} ${timeIn("auWeeklyTime", f.weekly_clean.time)}</div>
+      <div class="row" style="margin-top:8px">${t("auto.recycle")} ${numIn("auRecycle", f.weekly_clean.recycle_days || 0)} ${t("auto.days_u")}
+        <span class="small muted">${t("auto.recycle_d")}</span></div></div>
     <div class="card"><div class="row"><h2 class="grow">${icon("download")}${t("auto.dl")}</h2>${toggle("auDl", f.downloads.enabled)}</div>
       <p class="lead">${t("auto.dl_d")}</p>
       <div style="display:grid;gap:8px">
@@ -95,7 +97,8 @@ function readAutoForm() {
   const v = id => $("#" + id);
   return {
     alert: { enabled: v("auAlert").checked, percent: +v("auPct").value || 10, time: v("auAlertTime").value || "10:00" },
-    weekly_clean: { enabled: v("auWeekly").checked, day: v("auDay").value, time: v("auWeeklyTime").value || "12:00" },
+    weekly_clean: { enabled: v("auWeekly").checked, day: v("auDay").value, time: v("auWeeklyTime").value || "12:00",
+      recycle_days: +v("auRecycle").value || 0 },
     downloads: { enabled: v("auDl").checked, partial_days: +v("auPartial").value || 7, installer_days: +v("auInst").value || 30,
       duplicates: v("auDups").checked, organize: v("auOrg").checked },
   };

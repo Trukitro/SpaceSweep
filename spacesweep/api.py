@@ -201,6 +201,22 @@ class Api:
             raise ValueError("only SpaceSweep release links are opened")
         return webbrowser.open(url)
 
+    # ------------------------------------------------------------ recycle bin / recordings (v0.8)
+    def recycle_summary(self):
+        from . import recyclebin
+        return self._jobs.start("recycle", lambda job: recyclebin.summary())
+
+    def recycle_empty_older(self, days):
+        from . import recyclebin
+        days = int(days)
+        if days < 1:
+            raise ValueError("days must be >= 1")
+        return self._jobs.start("recycle-empty", lambda job: recyclebin.empty_older_than(days, job=job))
+
+    def recordings_scan(self):
+        from . import recordings
+        return self._jobs.start("recordings", recordings.scan)
+
     # ------------------------------------------------------------ component store (v0.5)
     def dism_analyze(self):
         from . import winmaint

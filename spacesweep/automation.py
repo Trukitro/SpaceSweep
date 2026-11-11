@@ -28,7 +28,7 @@ DAY_XML = {"MON": "Monday", "TUE": "Tuesday", "WED": "Wednesday", "THU": "Thursd
 
 DEFAULTS = {
     "alert": {"enabled": False, "percent": 10, "time": "10:00"},
-    "weekly_clean": {"enabled": False, "day": "SUN", "time": "12:00"},
+    "weekly_clean": {"enabled": False, "day": "SUN", "time": "12:00", "recycle_days": 0},
     "downloads": {"enabled": False, "partial_days": 7, "installer_days": 30, "duplicates": True, "organize": False},
 }
 
@@ -69,6 +69,7 @@ def _validate(s):
         block["time"] = f"{max(0, min(23, int(hh))):02d}:{max(0, min(59, int(mm))):02d}"
     if w["day"] not in DAYS:
         w["day"] = "SUN"
+    w["recycle_days"] = max(0, int(w.get("recycle_days") or 0))
     d["partial_days"] = max(1, int(d["partial_days"]))
     d["installer_days"] = max(1, int(d["installer_days"]))
     for block in (a, w, d):
@@ -319,6 +320,12 @@ def run_clean_safe(notifier=notify):
            and (admin or not i["admin"])]
     report = cleanup.clean(job, ids, drive) if ids else {"items": [], "free_before": 0, "free_after": 0}
     freed = sum(i["freed"] for i in report["items"])
+    days = get_settings()["weekly_clean"].get("recycle_days", 0)
+    if days:
+        from . import recyclebin
+        rb = recyclebin.empty_older_than(days)
+        freed += rb["freed"]
+        report["items"].append({"id": "recycle_bin_old", "freed": rb["freed"]})
     log_action("clean", {"drive": drive, "freed": freed, "items": [i["id"] for i in report["items"] if i["freed"]]})
     if freed >= 50 * 1024 * 1024:
         notifier(_t("clean_t", freed=human(freed)), _t("clean_b", d=drive[:2]))
