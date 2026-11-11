@@ -165,6 +165,16 @@ def scan(job, root):
             node.parent.files += node.files
 
     result.seconds = round(time.time() - started, 1)
+    try:
+        import shutil
+        from . import history
+        extra = {}
+        if os.path.splitdrive(root)[1] in ("\\", ""):
+            usage = shutil.disk_usage(root)
+            extra = {"used": usage.used, "free": usage.free}
+        history.save_snapshot("scan", root, history.snapshot_from_tree(result.root), result.root.size, extra)
+    except OSError:
+        pass  # history is a bonus; never fail a scan because of it
     with _SCANS_LOCK:
         _SCANS[result.id] = result
         for old in list(_SCANS)[:-3]:  # keep memory bounded: last 3 scans

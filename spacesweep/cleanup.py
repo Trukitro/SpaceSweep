@@ -321,7 +321,13 @@ def scan(job, drive_root):
     running = winapi.running_processes()
     for r in results:
         r["running"] = sorted(p for p in r["close"] if p in running)
-    return {"drive": drive_root, "is_system": is_system, "admin": winapi.is_admin(),
+    try:
+        from . import history
+        history.save_rule_sizes(drive_root, results)
+        growth = history.rule_growth(drive_root)
+    except OSError:
+        growth = {"since": None, "items": []}
+    return {"drive": drive_root, "is_system": is_system, "admin": winapi.is_admin(), "growth": growth,
             "free": winapi.disk_free(drive_root), "items": results}
 
 

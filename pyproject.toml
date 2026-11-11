@@ -20,4 +20,4 @@ packages = ["spacesweep"]
 version = { attr = "spacesweep.__version__" }
 
 [tool.setuptools.package-data]
-spacesweep = ["ui/*"]
+spacesweep = ["ui/*", "ui/pages/*"]

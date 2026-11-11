@@ -21,6 +21,8 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
   - *You change these in Windows*: page file, hibernation file, restore points, with a button to the right settings page.
   - *Never touch*: `Windows\Installer`, `WinSxS`, `DriverStore`, and why.
 - **Disk explorer**: scans a whole drive or folder (parallel `os.scandir`), then lets you drill into folders instantly. It also shows the largest files, space per file type, and how much used space could not be read (restore points, system files).
+- **History**: every scan keeps a small summary (folders of 50 MB+, 4 levels deep), so you can compare two dates and see **what grew**, down to the most specific folder. It also charts used space over time and shows which caches refill fastest between Cleanup analyses.
+- **Code projects**: finds `node_modules`, Python virtual environments, Rust `target`, .NET `bin/obj`, Gradle and JS build caches inside your projects. It shows how many days each project has been untouched and pre-selects only the inactive ones, with the command that recreates each folder.
 - **Downloads**: finds exact copies (`setup (1).exe`), unfinished downloads, old installers and zips you already extracted. Sorts loose files into folders by type, **with undo**.
 - **My folders**: analyzes Documents, Pictures, Videos, Music, Desktop or any folder: space per file type, biggest subfolders, biggest files, big files untouched for 2+ years. It flags likely leftovers: `node_modules`, Python virtual environments, Rust `target` folders, `.bak` backups you already zipped, Office lock files, big logs. It can also sort loose photos and videos into `Year\Year-Month` folders using the camera's EXIF date, **with undo**.
 - **Duplicates**: byte-for-byte identical files across any set of folders. Files are compared by size, then the first and last 64 KB, then a full BLAKE2 hash. Hard links are ignored, and at least one copy of each group is always kept.
@@ -90,15 +92,19 @@ spacesweep/
   analyzer.py    personal-folder analysis and leftover detection
   organizer.py   Downloads-by-type and photos-by-date plans, apply and undo
   duplicates.py  3-stage exact duplicate finder
+  history.py     snapshots, "what grew" comparison, free-space log
+  devprojects.py regenerable folders in code projects
+  imaging.py     PNG/ICO encoding without Pillow
   fsutil.py      fast walking, safe deletion, protected paths
   winapi.py      ctypes wrappers: drives, Recycle Bin, known folders, UAC
   jobs.py        background jobs with progress and cancel
   server.py      --browser mode (localhost only, per-run token)
-  ui/            index.html, app.css, app.js, i18n.js, logo.svg
+  ui/            index.html, app.css, app.js, i18n.js, logo.svg, pages/*.js
 tests/           unit tests (temp folders only)
+tools/           make_icon.py: draws the .ico from the logo geometry at build time
 ```
 
-Run the tests with `python -m unittest discover -s tests -v`.
+Run the tests from the repository folder with `python -m unittest discover -v`.
 
 ---
 

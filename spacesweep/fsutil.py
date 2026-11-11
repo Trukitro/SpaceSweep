@@ -33,6 +33,7 @@ def load_json(name, default):
 
 def save_json(name, data):
     path = os.path.join(app_data_dir(), name)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as fh:
         json.dump(data, fh, ensure_ascii=False, indent=1)
@@ -203,6 +204,17 @@ def delete_contents(root, older_than_days=0, job=None, on_progress=None):
     return freed, deleted, skipped
 
 
+def long_path(path):
+    r"""\\?\ prefix so deep trees (node_modules!) beyond 260 characters can still be deleted."""
+    prefix = "\\\\?\\"
+    if os.name != "nt" or path.startswith(prefix):
+        return path
+    path = os.path.abspath(path)
+    if path.startswith("\\\\"):  # \\server\share -> \\?\UNC\server\share
+        return prefix + "UNC" + path[1:]
+    return prefix + path
+
+
 def delete_paths(paths, permanent=False):
     """Delete user-chosen files/folders. Default goes to the Recycle Bin.
 
@@ -224,10 +236,10 @@ def delete_paths(paths, permanent=False):
         if permanent:
             try:
                 if os.path.isdir(p) and not is_link_path(p):
-                    delete_contents(p)
-                    os.rmdir(p)
+                    delete_contents(long_path(p))
+                    os.rmdir(long_path(p))
                 else:
-                    _remove_file(p)
+                    _remove_file(long_path(p))
                 item["ok"] = True
             except OSError as exc:
                 item["error"] = str(exc)

@@ -8,7 +8,7 @@ import locale
 import os
 import sys
 
-from . import APP_NAME, __version__, analyzer, cleanup, duplicates, fsutil, organizer, scanner, winapi
+from . import APP_NAME, __version__, analyzer, cleanup, devprojects, duplicates, fsutil, history, organizer, scanner, winapi
 from .jobs import JobManager
 
 
@@ -32,6 +32,7 @@ class Api:
             "lang": lang,
             "theme": settings.get("theme", "system"),
             "folders": winapi.user_folders(),
+            "home": os.path.expanduser("~"),
             "native": self._window is not None,
             "python": sys.version.split()[0],
         }
@@ -43,7 +44,12 @@ class Api:
         return settings
 
     def drives(self):
-        return winapi.list_drives()
+        drives = winapi.list_drives()
+        try:
+            history.log_free([d for d in drives if d["type"] == "fixed"])
+        except OSError:
+            pass
+        return drives
 
     def relaunch_admin(self):
         if winapi.relaunch_as_admin():
@@ -119,6 +125,34 @@ class Api:
     def duplicates_find(self, folders, min_mb=1):
         folders = [self._folder(f) for f in folders]
         return self._jobs.start("duplicates", duplicates.find, folders, int(float(min_mb) * 1024 * 1024))
+
+    # ------------------------------------------------------------ history (v0.2)
+    def history_roots(self):
+        return history.roots()
+
+    def history_compare(self, key, older_id=None, newer_id=None):
+        return history.compare(key, older_id, newer_id)
+
+    def history_free(self, drive):
+        return history.free_series(drive)
+
+    def history_used_change(self, drive, days=7):
+        return history.used_change(drive, days)
+
+    def history_rules(self, drive):
+        growth = history.rule_growth(drive)
+        names = {r["id"]: r["name"] for r in cleanup.RULES}
+        for item in growth["items"]:
+            item["name"] = names.get(item["id"], {"es": item["id"], "en": item["id"]})
+        return growth
+
+    # ------------------------------------------------------------ developer projects (v0.2)
+    def dev_roots(self):
+        return devprojects.default_roots(winapi.user_folders())
+
+    def dev_scan(self, roots, inactive_days=90):
+        roots = [self._folder(r) for r in roots]
+        return self._jobs.start("dev-scan", devprojects.scan, roots, int(inactive_days))
 
     def delete(self, paths, permanent=False):
         def run(job, paths, permanent):

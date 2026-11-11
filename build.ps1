@@ -16,9 +16,15 @@ if (-not (Test-Path $py)) {
 & $py -m pip install --disable-pip-version-check -q pyinstaller -r requirements.txt
 if ($LASTEXITCODE -ne 0) { throw "Could not install build tools into $venv" }
 
+# The .ico is generated from the same geometry as spacesweep/ui/logo.svg (the only logo kept in the repo).
+$icon = Join-Path $venv "SpaceSweep.ico"
+& $py tools\make_icon.py $icon
+if ($LASTEXITCODE -ne 0) { throw "Icon generation failed" }
+
 $mode = if ($OneFile) { "--onefile" } else { "--onedir" }
 & $py -m PyInstaller --noconfirm --clean --windowed $mode `
     --name SpaceSweep `
+    --icon $icon `
     --add-data "spacesweep/ui;spacesweep/ui" `
     --exclude-module tkinter `
     SpaceSweep.pyw

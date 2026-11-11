@@ -36,6 +36,11 @@ function size(b) {
 const num = n => Number(n || 0).toLocaleString(S.lang === "es" ? "es-PR" : "en-US");
 const date = sec => new Date(sec * 1000).toLocaleDateString(S.lang === "es" ? "es-PR" : "en-US", { year: "numeric", month: "short", day: "numeric" });
 const base = p => p.split(/[\\/]/).filter(Boolean).pop() || p;
+/* Show paths shorter and without the user name: C:\Users\me\AppData -> ~\AppData */
+const pp = p => {
+  const home = S.info && S.info.home;
+  return home && p && p.toLowerCase().startsWith(home.toLowerCase()) ? "~" + p.slice(home.length) : p;
+};
 const rel = (p, root) => (root && p.toLowerCase().startsWith(root.toLowerCase()) ? p.slice(root.length).replace(/^[\\/]/, "") : p) || p;
 
 /* ================================================================ backend bridge */
@@ -140,7 +145,7 @@ function selectionBar(scope) {
 }
 function refreshBar(scope) {
   const bar = $(`#${scope}Bar`);
-  if (bar) bar.innerHTML = selectionBar(scope);
+  if (bar) bar.innerHTML = (BARS[scope] || selectionBar)(scope);
 }
 const checkbox = (scope, p, extra = "") => `<input type="checkbox" data-sel="${scope}" data-path="${esc(p)}" ${S[scope].sel.has(p) ? "checked" : ""} ${extra}>`;
 
@@ -182,16 +187,26 @@ function applyTheme() {
   if (S.theme === "system") delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = S.theme;
 }
+/* Pages added in ui/pages/*.js push their renderer here; scopes register re-render / forget hooks. */
+const PAGE_RENDERERS = [];
+const BARS = {};
+const SCOPE_RENDER = {};
+const FORGET = {};
+const CHANGE_HOOKS = [];
 function renderAll() {
   applyStatic();
   renderHome(); renderCleanup(); renderExplorer(); renderDownloads(); renderFolders(); renderDuplicates();
+  PAGE_RENDERERS.forEach(fn => fn());
+  if (PAGE_ENTER[S.page]) PAGE_ENTER[S.page]();
 }
 function go(page) {
   S.page = page;
   $$(".nav").forEach(b => b.classList.toggle("active", b.dataset.page === page));
   $$(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + page));
   $(".main").scrollTop = 0;
+  if (PAGE_ENTER[page]) PAGE_ENTER[page]();
 }
+const PAGE_ENTER = {};
 async function loadDrives() {
   try {
     S.drives = await api("drives");
@@ -219,7 +234,7 @@ function driveCard(d) {
 }
 function renderHome() {
   const feats = [["cleanup", "sweep"], ["explorer", "pie"], ["downloads", "download"], ["folders", "folder"], ["duplicates", "copy"]];
-  $("#page-home").innerHTML = head(t("home.title"), t("home.sub")) +
+  $("#page-home").innerHTML = head(t("home.title"), t("home.sub")) + `<div id="homeHint"></div>` +
     `<div class="section-title"><h3>${t("home.drives")}</h3></div><div class="drives">${S.drives.map(driveCard).join("")}</div>
      <div class="section-title"><h3>${t("home.sections")}</h3></div>
      <div class="features">${feats.map(([p, ic]) => `<button class="feature" data-act="nav" data-page="${p}">${icon(ic)}
@@ -257,7 +272,7 @@ function clRow(it) {
   const sizeCell = !it.measured ? (it.mode === "shadow" ? `<span class="badge b-muted">${t("cleanup.unmeasured")}</span>` : "—") :
     `<span class="${it.size > 1 << 30 ? "size-big" : ""}">${size(it.size)}</span>`;
   const first = it.paths[0];
-  const where = first ? `<div class="path">${esc(first.path)}</div>` : `<span class="muted">—</span>`;
+  const where = first ? `<div class="path" title="${esc(first.path)}">${esc(pp(first.path))}</div>` : `<span class="muted">—</span>`;
   const acts = [];
   if (it.paths.length > 1 || (selectable && it.paths.length)) acts.push(`<button class="btn ghost sm" data-act="cl-details" data-id="${it.id}">${c_open(it.id) ? t("cleanup.hide") : t("cleanup.details")}${it.paths.length > 1 ? ` (${it.paths.length})` : ""}</button>`);
   if (!selectable && first) acts.push(openBtn(first.path));
@@ -268,7 +283,7 @@ function clRow(it) {
     <td class="num">${sizeCell}</td><td style="max-width:260px">${where}</td><td class="effect">${mdCode(L(it.effect))}</td><td class="act">${acts.join("")}</td></tr>`;
   if (c_open(it.id) && it.paths.length) {
     html += `<tr class="details-row"><td></td><td colspan="5"><div class="subpaths">${it.paths.map(p =>
-      `<div><span class="path">${esc(p.path)}</span><span class="num small">${size(p.size)}</span>${openBtn(p.path)}</div>`).join("")}</div></td></tr>`;
+      `<div><span class="path">${esc(pp(p.path))}</span><span class="num small">${size(p.size)}</span>${openBtn(p.path)}</div>`).join("")}</div></td></tr>`;
   }
   return html;
 }
@@ -380,7 +395,7 @@ function renderExplorerBody() {
     <div class="card"><div class="tabs">${["folders", "largest", "types"].map(k => `<button class="${x.tab === k ? "on" : ""}" data-act="ex-tab" data-tab="${k}">${t("explorer." + k)}</button>`).join("")}
     <span class="grow"></span><span class="small muted" style="align-self:center">${s.seconds}s</span></div>`;
   if (x.tab === "folders") html += explorerFolders();
-  if (x.tab === "largest") html += `<div>${s.largest.map(f => `<div class="lrow">${icon("file")}<span class="name" title="${esc(f.path)}">${esc(base(f.path))}<div class="path">${esc(f.path)}</div></span>
+  if (x.tab === "largest") html += `<div>${s.largest.map(f => `<div class="lrow">${icon("file")}<span class="name" title="${esc(f.path)}">${esc(base(f.path))}<div class="path">${esc(pp(f.path))}</div></span>
       <span></span><span class="num">${size(f.size)}</span><span></span><span class="act">${openBtn(f.path)}${trashBtn(f.path, "ex")}</span></div>`).join("")}</div>`;
   if (x.tab === "types") {
     const max = Math.max(1, ...s.exts.map(e => e.size));
@@ -582,7 +597,7 @@ function renderDuplicatesBody() {
     <span class="small muted">${t("dup.auto_d")}</span></div>`;
   html += r.groups.slice(0, u.shown).map((g, gi) => `<div class="group"><div class="group-head">${icon("copy")}<b>${t("dup.copies", { n: g.files.length, size: size(g.size) })}</b>
       <span class="grow"></span><span class="muted small">${size(g.wasted)}</span></div>
-      ${g.files.map(f => `<div class="group-row ${u.sel.has(f.path) ? "" : "keep"}">${checkbox("du", f.path, `data-group="${gi}"`)}<span class="path">${esc(f.path)}</span>
+      ${g.files.map(f => `<div class="group-row ${u.sel.has(f.path) ? "" : "keep"}">${checkbox("du", f.path, `data-group="${gi}"`)}<span class="path">${esc(pp(f.path))}</span>
         ${u.sel.has(f.path) ? "" : `<span class="badge b-safe">${t("dup.kept")}</span>`}<span class="small muted">${date(f.mtime)}</span>${openBtn(f.path)}</div>`).join("")}</div>`).join("");
   if (r.groups.length > u.shown) html += `<button class="btn" data-act="du-more">${t("common.show_more")} (${num(r.groups.length - u.shown)})</button>`;
   html += `<div class="sticky-actions" id="duBar">${selectionBar("du")}</div></div>`;
@@ -635,7 +650,7 @@ function forgetPaths(scope, gone) {
   } else if (scope === "ex" && S.ex.summary) {
     S.ex.summary.largest = S.ex.summary.largest.filter(f => !gone.has(f.path));
     explorerGo(S.ex.rel);
-  }
+  } else if (FORGET[scope]) FORGET[scope](gone);
 }
 
 /* ================================================================ events */
@@ -734,7 +749,7 @@ const ACTIONS = {
   },
 };
 function rerenderScope(scope) {
-  ({ dl: renderDownloadsBody, fo: renderFoldersBody, du: renderDuplicatesBody })[scope]();
+  ({ dl: renderDownloadsBody, fo: renderFoldersBody, du: renderDuplicatesBody, ...SCOPE_RENDER })[scope]();
 }
 
 document.addEventListener("click", e => {
@@ -773,6 +788,7 @@ document.addEventListener("change", e => {
   }
   if (el.id === "clDrive") { S.cl.drive = el.value; S.cl.result = null; S.cl.report = null; renderCleanup(); }
   if (el.id === "duKeep") S.du.keep = el.value;
+  CHANGE_HOOKS.forEach(fn => fn(el, e));
 });
 
 /* ================================================================ boot */

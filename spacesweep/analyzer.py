@@ -135,6 +135,11 @@ def analyze(job, folder, top_n=150):
                     break
 
     findings.sort(key=lambda f: f["size"], reverse=True)
+    try:
+        from . import history
+        history.save_snapshot("folder", folder, dict(subfolders), total)
+    except OSError:
+        pass
     to_list = lambda heap: [{"path": p, "size": s, "mtime": m} for s, p, m in sorted(heap, reverse=True)]
     return {
         "folder": folder,
