@@ -22,6 +22,7 @@ def main(argv=None):
     parser.add_argument("--debug", action="store_true", help="enable the WebView developer tools")
     parser.add_argument("--check", action="store_true", help="background check: free-space alert + Downloads rules, then exit")
     parser.add_argument("--clean-safe", action="store_true", help="clean the 'safe' Cleanup group on the system drive, then exit")
+    parser.add_argument("--open", metavar="PATH", help="open the Disk explorer on PATH (used by the Explorer right-click entry)")
     args = parser.parse_args(argv)
 
     if args.check or args.clean_safe:  # scheduled-task modes: no window, exit when done
@@ -32,6 +33,8 @@ def main(argv=None):
         return
 
     api = Api()
+    if args.open and os.path.isdir(args.open):
+        api._startup_path = os.path.abspath(args.open)
     if not args.browser:
         try:
             import webview

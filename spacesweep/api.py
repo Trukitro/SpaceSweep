@@ -16,6 +16,7 @@ class Api:
     def __init__(self):
         self._jobs = JobManager()
         self._window = None
+        self._startup_path = None
 
     # ------------------------------------------------------------ app
     def info(self):
@@ -200,6 +201,31 @@ class Api:
         if not str(url).startswith("https://github.com/Trukitro/SpaceSweep"):
             raise ValueError("only SpaceSweep release links are opened")
         return webbrowser.open(url)
+
+    # ------------------------------------------------------------ hard links / shell menu / restore points (v0.9)
+    def startup_path(self):
+        path, self._startup_path = self._startup_path, None
+        return path
+
+    def duplicates_hardlink(self, pairs):
+        pairs = [(str(d), str(k)) for d, k in pairs]
+        return self._jobs.start("hardlink", duplicates.hardlink, pairs)
+
+    def shellmenu_status(self):
+        from . import shellmenu
+        return shellmenu.status()
+
+    def shellmenu_set(self, on, lang="es"):
+        from . import shellmenu
+        return shellmenu.install(lang) if on else shellmenu.uninstall()
+
+    def restore_points(self):
+        from . import winmaint
+        return self._jobs.start("restore-points", lambda job: winmaint.restore_points())
+
+    def restore_delete_oldest(self, drive="C:"):
+        from . import winmaint
+        return self._jobs.start("restore-delete", lambda job: winmaint.delete_oldest_restore_point(drive))
 
     # ------------------------------------------------------------ recycle bin / recordings (v0.8)
     def recycle_summary(self):

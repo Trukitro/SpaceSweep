@@ -42,6 +42,9 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 - **Recordings**: Xbox Game Bar, NVIDIA ShadowPlay/Instant Replay, OBS and Steam clips and screenshots, with size and age per source.
 - **Smart Recycle Bin**: empties only what has been in the Recycle Bin longer than N days, so recent deletions stay recoverable. Also available as part of the weekly automatic cleanup.
 - **Move to another drive**: copies a heavy folder (AI models, SDKs, build caches) to another drive, verifies it, and leaves a directory junction behind, so programs keep working with the same path. It can be undone with *Bring back*.
+- **Duplicates → hard links**: keep every path working while storing the data once (same drive, for files that aren't edited).
+- **Explorer right-click**: *Analyze with SpaceSweep* on folders and drives (per-user, optional, removed on uninstall).
+- **Restore points** (admin): see them with dates and size, and delete only the oldest.
 - **Duplicates against a backup**: frees files on C: that already have an identical copy in your backup folder. The backup is never touched.
 - **WinSxS with DISM** (admin): the official, safe way to shrink the Windows component store.
 - **Automatic upkeep**: optional Windows scheduled tasks, with no resident process and no admin rights. A daily low-space notification, a weekly cleanup of the safe group, and Downloads rules (old installers, unfinished downloads and exact copies go to the Recycle Bin), with a log of everything that ran.
@@ -131,6 +134,7 @@ spacesweep/
   updates.py     GitHub Releases check and the bundled changelog
   recyclebin.py  Recycle Bin $I/$R parsing, empty-older-than
   recordings.py  capture folders of Game Bar, NVIDIA, OBS and Steam
+  shellmenu.py   Explorer right-click entry (HKCU)
   CHANGELOG.md   changelog shown on the What's new page
   automation.py  scheduled tasks (Task Scheduler XML), notifications, Downloads rules
   devprojects.py regenerable folders in code projects

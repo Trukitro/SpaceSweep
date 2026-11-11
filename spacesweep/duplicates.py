@@ -65,6 +65,38 @@ def _hash_groups(groups, fn, job, label, weight_start, weight_span):
     return {k: v for k, v in out.items() if len(v) > 1}
 
 
+def hardlink(job, pairs):
+    """Replace each duplicate with a hard link to its kept twin, so both paths keep working but the
+    data is stored once. pairs: [(duplicate_path, keeper_path)]. Re-verifies content before touching anything.
+
+    A hard link is the *same* file under two names: editing one edits the other. Meant for files
+    that are not edited (installers, archives, photos, videos).
+    """
+    results = []
+    for i, (dup, keep) in enumerate(pairs, 1):
+        item = {"path": dup, "keeper": keep, "ok": False, "size": 0, "error": None}
+        results.append(item)
+        try:
+            if os.path.splitdrive(os.path.abspath(dup))[0].upper() != os.path.splitdrive(os.path.abspath(keep))[0].upper():
+                raise ValueError("distinto disco: los enlaces duros solo funcionan en el mismo disco / different drive")
+            a, b = os.stat(dup), os.stat(keep)
+            if (a.st_dev, a.st_ino) == (b.st_dev, b.st_ino) and a.st_ino:
+                raise ValueError("ya están enlazados / already linked")
+            if a.st_size != b.st_size or _full_hash(dup, job) != _full_hash(keep, job):
+                raise ValueError("el contenido ya no es idéntico / content no longer identical")
+            tmp = dup + ".spacesweep-link"
+            os.link(keep, tmp)
+            os.replace(tmp, dup)  # atomic swap: the duplicate's name now points at the kept data
+            item.update(ok=True, size=a.st_size)
+        except (OSError, ValueError) as exc:
+            item["error"] = str(exc)
+            if os.path.exists(dup + ".spacesweep-link"):
+                os.remove(dup + ".spacesweep-link")
+        job.check()
+        job.update(progress=i / len(pairs), current=os.path.basename(dup))
+    return {"results": results, "ok": sum(r["ok"] for r in results), "freed": sum(r["size"] for r in results if r["ok"])}
+
+
 def find(job, folders, min_size=1024 * 1024, reference=()):
     """Exact duplicates among `folders`.
 

@@ -57,3 +57,6 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 [UninstallRun]
 Filename: "schtasks.exe"; Parameters: "/Delete /F /TN ""SpaceSweep - Daily check"""; Flags: runhidden; RunOnceId: "DelCheck"
 Filename: "schtasks.exe"; Parameters: "/Delete /F /TN ""SpaceSweep - Weekly clean"""; Flags: runhidden; RunOnceId: "DelClean"
+Filename: "reg.exe"; Parameters: "delete ""HKCU\Software\Classes\Directory\shell\SpaceSweep"" /f"; Flags: runhidden; RunOnceId: "DelMenuDir"
+Filename: "reg.exe"; Parameters: "delete ""HKCU\Software\Classes\Drive\shell\SpaceSweep"" /f"; Flags: runhidden; RunOnceId: "DelMenuDrive"
+Filename: "reg.exe"; Parameters: "delete ""HKCU\Software\Classes\Directory\Background\shell\SpaceSweep"" /f"; Flags: runhidden; RunOnceId: "DelMenuBg"

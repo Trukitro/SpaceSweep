@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.0 — 2026-11-11
+
+- **Duplicates → hard links**: instead of deleting copies, turn them into hard links to the kept file. Both paths keep working and the space is freed. Content is re-verified before each swap, and the swap is atomic. Meant for files that aren't edited; same drive only.
+- **Analyze with SpaceSweep** on the Explorer right-click menu for folders and drives. It's per-user, needs no admin, and can be toggled on the Automatic page; the uninstaller removes it. New `--open PATH` command-line option.
+- **Restore points** (administrator, in Cleanup): list them with dates and the space they use, delete only the oldest, or open System Protection to set the maximum.
+
 ## 0.8.0 — 2026-11-11
 
 - **Recordings** page: clips and screenshots from Xbox Game Bar, NVIDIA ShadowPlay / Instant Replay (path read from its settings), OBS Studio (every profile's recording path) and Steam. Shows size and age per source, with one click to select everything older than 90 days.

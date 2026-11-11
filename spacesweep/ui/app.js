@@ -322,13 +322,14 @@ function renderCleanupBody() {
       <th>${t("common.where")}</th><th>${t("common.effect")}</th><th></th></tr></thead><tbody>${items.map(clRow).join("")}</tbody></table></div>`;
   }
   html += `<div id="recycleCard"></div>`;
-  if (c.result.is_system) html += `<div id="dismCard"></div>`;
+  if (c.result.is_system) html += `<div id="restoreCard"></div><div id="dismCard"></div>`;
   html += `<div class="sticky-actions"><span class="grow small muted">${t("cleanup.confirm_note")}</span>
     <button class="btn primary" id="clFree" data-act="cl-free" disabled></button></div>`;
   el.innerHTML = html;
   renderCleanupStats();
   if (typeof renderDismCard === "function") renderDismCard();
   if (typeof renderRecycleCard === "function") renderRecycleCard();
+  if (typeof renderRestoreCard === "function") renderRestoreCard();
 }
 function renderCleanupReport() {
   const r = S.cl.report, el = $("#clReport");
@@ -610,7 +611,8 @@ function renderDuplicatesBody() {
   html += `<div class="card"><div class="row" style="margin-bottom:12px"><label class="muted">${t("dup.keep")}</label>
     <select id="duKeep">${["oldest", "newest", "shortest"].map(k => `<option value="${k}" ${u.keep === k ? "selected" : ""}>${t("dup.k_" + k)}</option>`).join("")}</select>
     <button class="btn sm" data-act="du-auto">${t("dup.auto")}</button><button class="btn ghost sm" data-act="sel-none" data-scope="du">${t("common.select_none")}</button>
-    <span class="small muted">${t("dup.auto_d")}</span></div>`;
+    <span class="small muted grow">${t("dup.auto_d")}</span>
+    <button class="btn sm" data-act="du-link" title="${esc((I18N[S.lang].intg || {}).link_warn || "")}">${icon("copy")}${t("intg.link_btn")}</button></div>`;
   html += r.groups.slice(0, u.shown).map((g, gi) => `<div class="group"><div class="group-head">${icon("copy")}<b>${t("dup.copies", { n: g.files.length, size: size(g.size) })}</b>
       <span class="grow"></span><span class="muted small">${size(g.wasted)}</span></div>
       ${g.files.map(f => f.ref

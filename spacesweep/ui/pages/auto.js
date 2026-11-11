@@ -80,7 +80,9 @@ function renderAuto() {
       <div class="row"><button class="btn sm" data-act="au-test">${t("auto.test")}</button>
         <button class="btn sm" data-act="au-run" data-mode="check">${icon("refresh")}${t("auto.run_check")}</button>
         <button class="btn sm" data-act="au-run" data-mode="clean">${icon("sweep")}${t("auto.run_clean")}</button></div></div>
+    <div id="shellCard"></div>
     <div class="card"><h2>${icon("history")}${t("auto.log")}</h2>${autoLog()}</div>`;
+  if (typeof renderShellCard === "function") renderShellCard();
 }
 
 function autoLog() {

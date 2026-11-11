@@ -36,6 +36,37 @@ def analyze(job=None):
     return parse_analysis(out)
 
 
+def restore_points():
+    """System restore points (volume shadow copies) with dates, plus the space they use. Needs admin."""
+    if not winapi.is_admin():
+        raise PermissionError("Requiere administrador / needs administrator")
+    script = ("$s = Get-CimInstance Win32_ShadowCopy | Sort-Object InstallDate | "
+              "Select-Object ID, VolumeName, @{n='Date';e={$_.InstallDate.ToString('s')}}; "
+              "$st = Get-CimInstance Win32_ShadowStorage | Select-Object UsedSpace, MaxSpace, AllocatedSpace; "
+              "[pscustomobject]@{points=@($s); storage=@($st)} | ConvertTo-Json -Depth 4 -Compress")
+    rc, out = winapi.run_hidden(["powershell", "-NoProfile", "-Command", script], timeout=60)
+    if rc != 0:
+        raise RuntimeError(out.strip()[-300:])
+    import json
+    data = json.loads(out.strip() or "{}")
+    storage = data.get("storage") or []
+    return {"points": data.get("points") or [], "used": sum(int(s.get("UsedSpace") or 0) for s in storage),
+            "max": sum(int(s.get("MaxSpace") or 0) for s in storage)}
+
+
+def delete_oldest_restore_point(drive="C:"):
+    if not winapi.is_admin():
+        raise PermissionError("Requiere administrador / needs administrator")
+    if not re.fullmatch(r"[A-Za-z]:", drive):
+        raise ValueError(drive)
+    before = restore_points()
+    rc, out = winapi.run_hidden(["vssadmin", "delete", "shadows", f"/for={drive}", "/oldest", "/quiet"], timeout=300)
+    if rc != 0:
+        raise RuntimeError(out.strip()[-300:])
+    after = restore_points()
+    return {"freed": max(0, before["used"] - after["used"]), "left": len(after["points"])}
+
+
 def cleanup(job=None):
     if not winapi.is_admin():
         raise PermissionError("Requiere administrador / needs administrator")
