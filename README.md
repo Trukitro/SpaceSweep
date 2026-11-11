@@ -31,6 +31,13 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 
 ## Installation
 
+### Download (recommended)
+
+1. Go to [Releases](https://github.com/Trukitro/SpaceSweep/releases) and download `SpaceSweep.exe` (about 11 MB, nothing to install).
+2. Double-click it. If Windows SmartScreen warns you (the .exe isn't code-signed), click **More info** → **Run anyway**.
+
+It needs the Microsoft Edge WebView2 runtime, which is already part of Windows 11 and of updated Windows 10.
+
 ### Run from source
 
 **Requirements**: Windows 10/11, Python 3.10+, and the Microsoft Edge WebView2 runtime (already included in Windows 11).
@@ -54,6 +61,8 @@ spacesweep
 .\build.ps1            # folder build in dist\SpaceSweep\ (fastest start-up)
 .\build.ps1 -OneFile   # single dist\SpaceSweep.exe
 ```
+
+The script builds inside an isolated `.build-venv`, so only `pywebview` ends up in the .exe and your global Python is never modified.
 
 ---
 
@@ -104,3 +113,9 @@ Run the tests with `python -m unittest discover -s tests -v`.
 ## Creator
 
 Created by EtchTechnologies ([Rikion](https://github.com/Trukitro)).
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

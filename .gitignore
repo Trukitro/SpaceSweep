@@ -23,3 +23,6 @@ htmlcov/
 .idea/
 Thumbs.db
 .DS_Store
+
+# Isolated build environment
+.build-venv/

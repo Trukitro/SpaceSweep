@@ -10,3 +10,4 @@ First release.
 - My folders: analysis of Documents/Pictures/Videos/any folder, leftover detection (node_modules, venvs, Rust target, zipped backups, Office lock files, big logs), photos/videos by EXIF date with undo.
 - Exact duplicate finder (size → edge hash → full BLAKE2), hard links ignored, at least one copy always kept.
 - Native window (pywebview) or `--browser` mode on localhost with a per-run token.
+- Standalone `SpaceSweep.exe` (~11 MB) built in an isolated environment; installable with pip so `python -m spacesweep` works from any folder.
