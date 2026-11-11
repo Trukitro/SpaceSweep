@@ -51,7 +51,8 @@ class HashTests(unittest.TestCase):
         self.assertEqual(groups, [["a", "b", "d"]])
 
 
-@unittest.skipUnless(winapi.IS_WINDOWS, "uses the Windows shell thumbnail API")
+@unittest.skipUnless(winapi.IS_WINDOWS and not os.environ.get("GITHUB_ACTIONS"),
+                     "uses the Windows shell thumbnail API (not available in CI's non-interactive session)")
 class ShellThumbnailTests(TempCase):
     def test_find_similar_on_real_files(self):
         folder = self.p("Pictures")

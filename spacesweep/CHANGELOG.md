@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.0 — 2026-11-11
+
+First stable release.
+
+- **Export report** (Home): one shareable HTML page plus CSV files for Excel. It covers drives, the Cleanup analysis, what grew since the previous scan, cache growth and automatic-task activity. Paths under your user folder are written as `~\…`.
+- **GitHub Actions CI**: unit tests, JavaScript syntax check, and portable + installer builds on every push, downloadable as workflow artifacts.
+- **winget manifests** for `Trukitro.SpaceSweep` in `packaging/winget`.
+- The README is reorganized by what you want to do, with release and CI badges.
+- The uninstaller also removes the Explorer right-click entry.
+
 ## 0.9.0 — 2026-11-11
 
 - **Duplicates → hard links**: instead of deleting copies, turn them into hard links to the kept file. Both paths keep working and the space is freed. Content is re-verified before each swap, and the swap is atomic. Meant for files that aren't edited; same drive only.

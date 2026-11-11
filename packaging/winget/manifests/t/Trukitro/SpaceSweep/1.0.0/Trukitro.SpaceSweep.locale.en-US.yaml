@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+PackageIdentifier: Trukitro.SpaceSweep
+PackageVersion: 1.0.0
+PackageLocale: en-US
+Publisher: Trukitro
+PublisherUrl: https://github.com/Trukitro
+PublisherSupportUrl: https://github.com/Trukitro/SpaceSweep/issues
+Author: Rikion
+PackageName: SpaceSweep
+PackageUrl: https://github.com/Trukitro/SpaceSweep
+License: MIT
+LicenseUrl: https://github.com/Trukitro/SpaceSweep/blob/main/LICENSE
+ShortDescription: Free up disk space on Windows without guessing what is safe to delete.
+Description: |-
+  SpaceSweep finds caches, leftovers, duplicates, forgotten games and big files, and explains in plain language what each thing is,
+  what happens if you delete it and what you should never touch. Includes a "free N GB" assistant, transparent NTFS compression,
+  space history, Downloads organizer, similar-photo finder, moving folders to another drive and automatic upkeep. Spanish and English.
+Moniker: spacesweep
+Tags:
+  - cleanup
+  - disk-space
+  - duplicates
+  - storage
+  - windows
+ReleaseNotesUrl: https://github.com/Trukitro/SpaceSweep/releases/tag/v1.0.0
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

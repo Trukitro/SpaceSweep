@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+PackageIdentifier: Trukitro.SpaceSweep
+PackageVersion: 1.0.0
+MinimumOSVersion: 10.0.17763.0
+InstallerType: inno
+Scope: user
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+UpgradeBehavior: install
+ProductCode: '{7C3B1E2A-4F5D-4A8E-9B61-2D7E0C5F9A13}_is1'
+ReleaseDate: 2026-11-11
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/Trukitro/SpaceSweep/releases/download/v1.0.0/SpaceSweepSetup.exe
+    InstallerSha256: 935CAA80A9C2FA2087EA3767EF4D87A1D0BC60F1F1FE763F23BB4591F74F8E71
+ManifestType: installer
+ManifestVersion: 1.6.0

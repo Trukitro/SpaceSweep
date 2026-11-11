@@ -73,7 +73,8 @@ class FsutilTests(TempCase):
         self.assertEqual(res[0]["size"], 4)
         self.assertFalse(os.path.exists(a) or os.path.exists(os.path.dirname(d)))
 
-    @unittest.skipUnless(winapi.IS_WINDOWS, "Recycle Bin is Windows-only")
+    @unittest.skipUnless(winapi.IS_WINDOWS and not os.environ.get("GITHUB_ACTIONS"),
+                         "Recycle Bin needs an interactive Windows session")
     def test_send_to_recycle_bin(self):
         f = write(self.p("recycle-me.txt"), b"spacesweep test file, safe to delete")
         res = fsutil.delete_paths([f], permanent=False)

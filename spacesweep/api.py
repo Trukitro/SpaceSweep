@@ -202,6 +202,18 @@ class Api:
             raise ValueError("only SpaceSweep release links are opened")
         return webbrowser.open(url)
 
+    # ------------------------------------------------------------ report (v1.0)
+    def report_export(self, lang="es"):
+        from . import report
+        return self._jobs.start("report", report.export, None, lang if lang in ("es", "en") else "es")
+
+    def report_open(self, path):
+        name = os.path.basename(str(path))
+        if not (name.startswith("SpaceSweep-report-") and name.endswith((".html", ".csv")) and os.path.isfile(path)):
+            raise ValueError("not a SpaceSweep report")
+        os.startfile(path)
+        return True
+
     # ------------------------------------------------------------ hard links / shell menu / restore points (v0.9)
     def startup_path(self):
         path, self._startup_path = self._startup_path, None
