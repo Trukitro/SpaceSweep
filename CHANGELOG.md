@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 — 2026-11-11
+
+- **Similar photos**: bursts, edited copies and resized versions. Thumbnails come from Windows itself (IShellItemImageFactory through ctypes), so any format Explorer can preview works without an image library. A 64-bit dHash plus banded grouping avoids comparing every pair, and clusters are re-checked so A~B~C chains don't merge unrelated photos. Results show thumbnails, and *keep the largest* selects the rest.
+- **Installer** (`SpaceSweepSetup.exe`, Inno Setup): per-user, no admin, Spanish/English. Uninstalling removes the scheduled tasks too. The portable `SpaceSweep.exe` is still published.
+- **README screenshots**, generated from the real window by `tools/screenshots.py` with demo data.
+- Home lists every section with a one-line description.
+- Downloads and My folders show the folder as `~\…` like the rest of the app.
+
 ## 0.5.0 — 2026-11-11
 
 - **Duplicates against a backup**: point at your backup folder (for example on J:). Only files that already have an identical copy there are listed, and nothing in the backup is ever offered for deletion.

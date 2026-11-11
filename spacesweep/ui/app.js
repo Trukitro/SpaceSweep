@@ -233,12 +233,16 @@ function driveCard(d) {
       <button class="btn sm" data-act="home-explore" data-root="${esc(d.root)}">${icon("pie")}${t("home.explore")}</button></div></div>`;
 }
 function renderHome() {
-  const feats = [["cleanup", "sweep"], ["explorer", "pie"], ["downloads", "download"], ["folders", "folder"], ["duplicates", "copy"]];
+  // [page, icon, label key]; descriptions are home.f_<page>
+  const feats = [["cleanup", "sweep", "nav.cleanup"], ["projects", "code", "proj.nav"], ["programs", "app", "prog.nav"],
+    ["games", "game", "games.nav"], ["devtools", "brain", "dev.nav"], ["duplicates", "copy", "nav.duplicates"],
+    ["photos", "image", "ph.nav"], ["explorer", "pie", "nav.explorer"], ["history", "history", "hist.nav"],
+    ["downloads", "download", "nav.downloads"], ["folders", "folder", "nav.folders"], ["move", "disk", "mv.nav"], ["auto", "clock", "auto.nav"]];
   $("#page-home").innerHTML = head(t("home.title"), t("home.sub")) + `<div id="homeHint"></div>` +
     `<div class="section-title"><h3>${t("home.drives")}</h3></div><div class="drives">${S.drives.map(driveCard).join("")}</div>
      <div class="section-title"><h3>${t("home.sections")}</h3></div>
-     <div class="features">${feats.map(([p, ic]) => `<button class="feature" data-act="nav" data-page="${p}">${icon(ic)}
-       <div><b>${t("nav." + p)}</b><span>${t("home.f_" + p)}</span></div></button>`).join("")}</div>`;
+     <div class="features">${feats.map(([p, ic, label]) => `<button class="feature" data-act="nav" data-page="${p}">${icon(ic)}
+       <div><b>${t(label)}</b><span>${t("home.f_" + p)}</span></div></button>`).join("")}</div>`;
 }
 
 /* ================================================================ Cleanup */
@@ -447,7 +451,7 @@ function renderDownloads() {
   const d = S.dl;
   if (!d.folder) d.folder = S.info.folders.downloads;
   $("#page-downloads").innerHTML = head(t("downloads.title"), t("downloads.sub")) +
-    `<div class="card"><div class="row">${icon("download")}<span class="mono grow">${esc(d.folder)}</span>
+    `<div class="card"><div class="row">${icon("download")}<span class="mono grow" title="${esc(d.folder)}">${esc(pp(d.folder))}</span>
       <button class="btn" data-act="dl-change">${t("common.change")}</button>
       <button class="btn primary" data-act="dl-scan">${icon("sweep")}${d.res ? t("common.reanalyze") : t("common.analyze")}</button></div></div>
      <div class="task hidden" id="dlTask"></div><div id="dlBody"></div>`;
@@ -505,7 +509,7 @@ function renderFolders() {
   const chips = FOLDER_KEYS.map(([k, ic]) => `<button class="chip ${f.key === k ? "on" : ""}" data-act="fo-key" data-key="${k}">${icon(ic)}${t("folders." + k)}</button>`).join("");
   $("#page-folders").innerHTML = head(t("folders.title"), t("folders.sub")) +
     `<div class="card"><div class="row">${chips}<button class="chip ${f.key === "custom" ? "on" : ""}" data-act="fo-other">${icon("plus")}${t("common.other")}</button></div>
-      <div class="row" style="margin-top:12px"><span class="mono grow">${esc(f.folder)}</span>
+      <div class="row" style="margin-top:12px"><span class="mono grow" title="${esc(f.folder)}">${esc(pp(f.folder))}</span>
       <button class="btn" data-act="fo-dups">${icon("copy")}${t("folders.dups")}</button>
       <button class="btn primary" data-act="fo-scan">${icon("sweep")}${f.res ? t("common.reanalyze") : t("common.analyze")}</button></div></div>
      <div class="task hidden" id="foTask"></div><div id="foBody"></div>`;

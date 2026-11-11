@@ -149,6 +149,18 @@ class Api:
         from . import mover
         return self._jobs.start("move-suggest", lambda job: mover.suggestions())
 
+    # ------------------------------------------------------------ similar photos (v0.6)
+    def photos_find(self, folders, threshold=6):
+        from . import photos
+        folders = [self._folder(f) for f in folders]
+        return self._jobs.start("photos", photos.find_similar, folders, max(1, min(15, int(threshold))))
+
+    def photo_thumb(self, path, px=120):
+        from . import photos
+        if not os.path.isfile(path):
+            return None
+        return photos.thumb_data_uri(path, int(px))
+
     # ------------------------------------------------------------ component store (v0.5)
     def dism_analyze(self):
         from . import winmaint

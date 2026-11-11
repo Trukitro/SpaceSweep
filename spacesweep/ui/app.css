@@ -243,6 +243,13 @@ td.act { width: 1%; white-space: nowrap; text-align: right; }
 .group-row .path { flex: 1; }
 .group-row.keep .path { color: var(--text); }
 
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 10px; }
+.photo { display: flex; flex-direction: column; gap: 4px; border: 2px solid transparent; border-radius: 10px; padding: 6px; cursor: pointer; background: var(--panel-2); min-width: 0; }
+.photo:has(input:checked) { border-color: var(--danger); }
+.photo .thumb { aspect-ratio: 4 / 3; border-radius: 7px; background: var(--bar); display: grid; place-items: center; overflow: hidden; color: var(--muted); }
+.photo .thumb img { width: 100%; height: 100%; object-fit: contain; }
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
 /* ---------------------------------------------------------- modal & toast */
 .modal-back { position: fixed; inset: 0; background: rgba(5, 8, 12, .55); display: grid; place-items: center; z-index: 50; padding: 20px; }
 .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; width: min(640px, 100%); max-height: 86vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.35); }

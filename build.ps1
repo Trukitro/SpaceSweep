@@ -2,7 +2,9 @@
 # so only pywebview ends up in the .exe and your global Python is never modified.
 #   .\build.ps1            -> dist\SpaceSweep\SpaceSweep.exe (folder build, fastest start-up)
 #   .\build.ps1 -OneFile   -> dist\SpaceSweep.exe (single file)
-param([switch]$OneFile)
+#   .\build.ps1 -Installer -> dist\SpaceSweepSetup.exe (folder build packed with Inno Setup 6)
+param([switch]$OneFile, [switch]$Installer)
+if ($Installer) { $OneFile = $false }
 
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
@@ -29,5 +31,19 @@ $mode = if ($OneFile) { "--onefile" } else { "--onedir" }
     --exclude-module tkinter `
     SpaceSweep.pyw
 if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
+
+if ($Installer) {
+    $iscc = @("$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe", "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+              "$env:ProgramFiles\Inno Setup 6\ISCC.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if (-not $iscc) { throw "Inno Setup 6 not found (https://jrsoftware.org/isinfo.php)" }
+    $version = & $py -c "import spacesweep; print(spacesweep.__version__)"
+    $stage = Join-Path $env:TEMP "spacesweep-stage"
+    if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
+    Copy-Item dist\SpaceSweep $stage -Recurse
+    & $iscc "/DMyAppVersion=$version" "/DSourceDir=$stage" installer\spacesweep.iss
+    $rc = $LASTEXITCODE
+    Remove-Item $stage -Recurse -Force
+    if ($rc -ne 0) { throw "Inno Setup failed" }
+}
 
 Write-Host "Done: dist\SpaceSweep" -ForegroundColor Green

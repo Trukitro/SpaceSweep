@@ -10,6 +10,13 @@ SpaceSweep finds caches, leftovers, duplicates and forgotten big files, and tell
 
 It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python engine: **one dependency, no admin rights needed for most features, nothing deleted without a confirmation that lists exactly what goes.**
 
+<p align="center">
+  <img src="docs/screenshots/home.png" alt="Home: drives and sections" width="49%">
+  <img src="docs/screenshots/cleanup.png" alt="Cleanup: every item explained" width="49%">
+  <img src="docs/screenshots/downloads.png" alt="Downloads: copies, unfinished downloads, old installers" width="49%">
+  <img src="docs/screenshots/photos.png" alt="Similar photos" width="49%">
+</p>
+
 ---
 
 ## Features
@@ -29,6 +36,7 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 - **Downloads**: finds exact copies (`setup (1).exe`), unfinished downloads, old installers and zips you already extracted. Sorts loose files into folders by type, **with undo**.
 - **My folders**: analyzes Documents, Pictures, Videos, Music, Desktop or any folder: space per file type, biggest subfolders, biggest files, big files untouched for 2+ years. It flags likely leftovers: `node_modules`, Python virtual environments, Rust `target` folders, `.bak` backups you already zipped, Office lock files, big logs. It can also sort loose photos and videos into `Year\Year-Month` folders using the camera's EXIF date, **with undo**.
 - **Duplicates**: byte-for-byte identical files across any set of folders. Files are compared by size, then the first and last 64 KB, then a full BLAKE2 hash. Hard links are ignored, and at least one copy of each group is always kept.
+- **Similar photos**: bursts, edited copies and resized versions, found with a 64-bit difference hash computed on the thumbnails Windows already makes (any format Explorer can preview, with no image library). Results are shown as thumbnails, and *keep the largest* selects the rest.
 - **Move to another drive**: copies a heavy folder (AI models, SDKs, build caches) to another drive, verifies it, and leaves a directory junction behind, so programs keep working with the same path. It can be undone with *Bring back*.
 - **Duplicates against a backup**: frees files on C: that already have an identical copy in your backup folder. The backup is never touched.
 - **WinSxS with DISM** (admin): the official, safe way to shrink the Windows component store.
@@ -42,8 +50,12 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 
 ### Download (recommended)
 
-1. Go to [Releases](https://github.com/Trukitro/SpaceSweep/releases) and download `SpaceSweep.exe` (about 11 MB, nothing to install).
-2. Double-click it. If Windows SmartScreen warns you (the .exe isn't code-signed), click **More info** → **Run anyway**.
+Go to [Releases](https://github.com/Trukitro/SpaceSweep/releases) and download one of:
+
+- `SpaceSweepSetup.exe`: installer, per-user and with no admin rights. Adds Start-menu and desktop shortcuts, and its uninstaller also removes SpaceSweep's scheduled tasks.
+- `SpaceSweep.exe`: portable single file (about 11 MB). Nothing to install.
+
+If Windows SmartScreen warns you (the files aren't code-signed), click **More info** → **Run anyway**.
 
 It needs the Microsoft Edge WebView2 runtime, which is already part of Windows 11 and of updated Windows 10.
 
@@ -69,7 +81,10 @@ spacesweep
 ```powershell
 .\build.ps1            # folder build in dist\SpaceSweep\ (fastest start-up)
 .\build.ps1 -OneFile   # single dist\SpaceSweep.exe
+.\build.ps1 -Installer # dist\SpaceSweepSetup.exe (needs Inno Setup 6)
 ```
+
+`python tools/screenshots.py` regenerates the README screenshots from the real app window, using demo files for Downloads and Similar photos.
 
 The script builds inside an isolated `.build-venv`, so only `pywebview` ends up in the .exe and your global Python is never modified.
 
@@ -105,6 +120,7 @@ spacesweep/
   inventory.py   programs, games, developer tools, local AI models
   mover.py       move a folder to another drive behind a junction (verified, undoable)
   winmaint.py    WinSxS analysis and cleanup through DISM
+  photos.py      similar photos: shell thumbnails via COM + dHash + banded grouping
   automation.py  scheduled tasks (Task Scheduler XML), notifications, Downloads rules
   devprojects.py regenerable folders in code projects
   imaging.py     PNG/ICO encoding without Pillow
@@ -114,7 +130,9 @@ spacesweep/
   server.py      --browser mode (localhost only, per-run token)
   ui/            index.html, app.css, app.js, i18n.js, logo.svg, pages/*.js
 tests/           unit tests (temp folders only)
-tools/           make_icon.py: draws the .ico from the logo geometry at build time
+tools/           make_icon.py (.ico from the logo geometry), screenshots.py (README images)
+installer/       Inno Setup script
+docs/            screenshots
 ```
 
 Run the tests from the repository folder with `python -m unittest discover -v`.
@@ -125,6 +143,7 @@ Run the tests from the repository folder with `python -m unittest discover -v`.
 
 - **Only one dependency (`pywebview`).** Windows APIs go through `ctypes` (no pywin32), hashing uses `hashlib.blake2b`, and EXIF dates are read by a 60-line parser (no Pillow). The UI has no framework, no CDN and no web fonts, so it works offline and the build stays small.
 - **Explain, then act.** Every item carries a *what it is* and a *what happens if you delete it* text. Things SpaceSweep can't safely delete (WSL disks, restore points, `WinSxS`) are explained and linked to the right Windows tool instead of being touched.
+- **No raw MFT reading.** Tools like WizTree read the NTFS master file table directly. In pure Python, parsing millions of 1 KB records is no faster than the parallel `os.scandir` walk SpaceSweep already does, and it would need administrator rights on every scan. So the scanner stays unprivileged and History makes repeat analyses cheap to compare.
 - **Browser mode is locked down.** It listens on `127.0.0.1` only, checks the `Host` header and requires a random per-run token on every API call, so other websites can't drive it.
 
 ---
