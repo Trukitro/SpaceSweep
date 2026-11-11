@@ -52,13 +52,18 @@
   <aside class="side">
     <div class="brand"><img src="logo.svg" alt=""><div><b>SpaceSweep</b><small id="version"></small></div></div>
     <button class="nav active" data-page="home"><svg class="ic"><use href="#i-home"/></svg><span data-t="nav.home"></span></button>
+    <div class="nav-group" data-t="nav.g_free"></div>
     <button class="nav" data-page="cleanup"><svg class="ic"><use href="#i-sweep"/></svg><span data-t="nav.cleanup"></span></button>
-    <button class="nav" data-page="explorer"><svg class="ic"><use href="#i-pie"/></svg><span data-t="nav.explorer"></span></button>
-    <button class="nav" data-page="history"><svg class="ic"><use href="#i-history"/></svg><span data-t="hist.nav"></span></button>
-    <button class="nav" data-page="downloads"><svg class="ic"><use href="#i-download"/></svg><span data-t="nav.downloads"></span></button>
-    <button class="nav" data-page="folders"><svg class="ic"><use href="#i-folder"/></svg><span data-t="nav.folders"></span></button>
     <button class="nav" data-page="projects"><svg class="ic"><use href="#i-code"/></svg><span data-t="proj.nav"></span></button>
     <button class="nav" data-page="duplicates"><svg class="ic"><use href="#i-copy"/></svg><span data-t="nav.duplicates"></span></button>
+    <div class="nav-group" data-t="nav.g_understand"></div>
+    <button class="nav" data-page="explorer"><svg class="ic"><use href="#i-pie"/></svg><span data-t="nav.explorer"></span></button>
+    <button class="nav" data-page="history"><svg class="ic"><use href="#i-history"/></svg><span data-t="hist.nav"></span></button>
+    <div class="nav-group" data-t="nav.g_organize"></div>
+    <button class="nav" data-page="downloads"><svg class="ic"><use href="#i-download"/></svg><span data-t="nav.downloads"></span></button>
+    <button class="nav" data-page="folders"><svg class="ic"><use href="#i-folder"/></svg><span data-t="nav.folders"></span></button>
+    <div class="nav-group" data-t="nav.g_keep"></div>
+    <button class="nav" data-page="auto"><svg class="ic"><use href="#i-clock"/></svg><span data-t="auto.nav"></span></button>
     <div class="side-foot">
       <div class="admin-pill" id="adminPill"><span class="dot"></span><span id="adminText"></span></div>
       <button class="btn sm hidden" id="btnAdmin"><svg class="ic"><use href="#i-shield"/></svg><span data-t="admin.relaunch"></span></button>
@@ -76,6 +81,7 @@
     <section class="page" id="page-duplicates"></section>
     <section class="page" id="page-history"></section>
     <section class="page" id="page-projects"></section>
+    <section class="page" id="page-auto"></section>
   </main>
 </div>
 <div class="toasts" id="toasts"></div>
@@ -83,5 +89,6 @@
 <script src="app.js"></script>
 <script src="pages/history.js"></script>
 <script src="pages/projects.js"></script>
+<script src="pages/auto.js"></script>
 </body>
 </html>

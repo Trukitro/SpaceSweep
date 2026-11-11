@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 — 2026-11-11
+
+- **Automatic upkeep** page, run by Windows Task Scheduler. Nothing stays resident and no administrator rights are needed:
+  - *Low-space alert*: a daily check (plus 5 minutes after sign-in) shows a Windows notification when the system drive drops below the chosen free percentage, at most once a day.
+  - *Weekly cleanup* of the "Safe to delete" Cleanup group, with a notification saying how much was freed.
+  - *Downloads rules*: unfinished downloads and installers older than N days, plus exact copies, go to the Recycle Bin. Loose files can optionally be sorted by type.
+  - Log of everything that ran automatically, a "test notification" button, and buttons to run the check or the cleanup now.
+- New command-line modes: `--check` and `--clean-safe`, which do their job and exit.
+- The sidebar is grouped into Free up space / Understand the drive / Organize / Keep it clean.
+
 ## 0.2.0 — 2026-11-11
 
 - **History**: every disk scan and folder analysis keeps a compact snapshot. A new page compares two dates and lists what grew or shrank, down to the most specific folder. It also charts used space over time and shows which caches refill fastest.

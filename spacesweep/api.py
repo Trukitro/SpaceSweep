@@ -154,6 +154,27 @@ class Api:
         roots = [self._folder(r) for r in roots]
         return self._jobs.start("dev-scan", devprojects.scan, roots, int(inactive_days))
 
+    # ------------------------------------------------------------ automation (v0.3)
+    def auto_status(self):
+        from . import automation
+        return automation.status()
+
+    def auto_save(self, settings):
+        from . import automation
+        return automation.save_settings(settings)
+
+    def auto_test_notify(self, title, body):
+        from . import automation
+        return automation.notify(title, body)
+
+    def auto_run(self, mode):
+        from . import automation
+
+        def run(job, mode):
+            job.update(progress=-1)
+            return automation.run_check() if mode == "check" else automation.run_clean_safe()
+        return self._jobs.start("auto-run", run, mode)
+
     def delete(self, paths, permanent=False):
         def run(job, paths, permanent):
             job.update(message="deleting", progress=-1)

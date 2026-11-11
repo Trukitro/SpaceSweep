@@ -20,7 +20,16 @@ def main(argv=None):
     parser.add_argument("--port", type=int, default=0, help="port for --browser mode (default: random)")
     parser.add_argument("--no-open", action="store_true", help="with --browser: don't open a browser tab")
     parser.add_argument("--debug", action="store_true", help="enable the WebView developer tools")
+    parser.add_argument("--check", action="store_true", help="background check: free-space alert + Downloads rules, then exit")
+    parser.add_argument("--clean-safe", action="store_true", help="clean the 'safe' Cleanup group on the system drive, then exit")
     args = parser.parse_args(argv)
+
+    if args.check or args.clean_safe:  # scheduled-task modes: no window, exit when done
+        from . import automation
+        result = automation.run_check() if args.check else automation.run_clean_safe()
+        if sys.stdout:
+            print(result)
+        return
 
     api = Api()
     if not args.browser:

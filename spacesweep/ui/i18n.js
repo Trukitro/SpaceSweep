@@ -1,7 +1,8 @@
 /* UI strings. Rule texts (what each cleanup item is) come from Python in both languages. */
 window.I18N = {
   es: {
-    nav: { home: "Inicio", cleanup: "Limpieza", explorer: "Explorar disco", downloads: "Descargas", folders: "Mis carpetas", duplicates: "Duplicados" },
+    nav: { home: "Inicio", cleanup: "Limpieza", explorer: "Explorar disco", downloads: "Descargas", folders: "Mis carpetas", duplicates: "Duplicados",
+           g_free: "Liberar espacio", g_understand: "Entender el disco", g_organize: "Ordenar", g_keep: "Mantener" },
     theme: { system: "Auto", light: "Claro", dark: "Oscuro" },
     admin: { on: "Ejecutando como administrador", off: "Sin permisos de administrador", relaunch: "Reiniciar como admin",
              why: "Algunas limpiezas de Windows (Windows Update, Temp del sistema) necesitan permisos de administrador." },
@@ -76,7 +77,8 @@ window.I18N = {
            none: "No se encontraron duplicados.", choose: "Añade al menos una carpeta.", how: "Cómo funciona: compara tamaño, luego el inicio y final del archivo, y por último el contenido completo (BLAKE2). Solo aparecen archivos 100% idénticos." }
   },
   en: {
-    nav: { home: "Home", cleanup: "Cleanup", explorer: "Disk explorer", downloads: "Downloads", folders: "My folders", duplicates: "Duplicates" },
+    nav: { home: "Home", cleanup: "Cleanup", explorer: "Disk explorer", downloads: "Downloads", folders: "My folders", duplicates: "Duplicates",
+           g_free: "Free up space", g_understand: "Understand the drive", g_organize: "Organize", g_keep: "Keep it clean" },
     theme: { system: "Auto", light: "Light", dark: "Dark" },
     admin: { on: "Running as administrator", off: "Not running as administrator", relaunch: "Restart as admin",
              why: "Some Windows cleanups (Windows Update, system Temp) need administrator rights." },
