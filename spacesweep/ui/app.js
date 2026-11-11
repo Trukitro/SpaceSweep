@@ -14,7 +14,7 @@ const S = {
   ex: { root: null, summary: null, rel: "", node: null, tab: "folders" },
   dl: { folder: null, res: null, sel: new Set(), sizes: new Map(), perm: false, undo: null, list: false },
   fo: { key: "documents", folder: null, res: null, sel: new Set(), sizes: new Map(), perm: false, media: null, undo: null },
-  du: { folders: [], min: "1", res: null, sel: new Set(), sizes: new Map(), keep: "oldest", shown: 60, perm: false },
+  du: { folders: [], min: "1", res: null, sel: new Set(), sizes: new Map(), keep: "oldest", shown: 60, perm: false, refOn: false, ref: [] },
 };
 
 /* i18n: static strings are trusted; interpolated values are escaped. */
@@ -316,10 +316,12 @@ function renderCleanupBody() {
       <div class="tbl-wrap"><table><thead><tr><th class="chk"></th><th>${t("common.what")}</th><th class="num">${t("common.size")}</th>
       <th>${t("common.where")}</th><th>${t("common.effect")}</th><th></th></tr></thead><tbody>${items.map(clRow).join("")}</tbody></table></div>`;
   }
+  if (c.result.is_system) html += `<div id="dismCard"></div>`;
   html += `<div class="sticky-actions"><span class="grow small muted">${t("cleanup.confirm_note")}</span>
     <button class="btn primary" id="clFree" data-act="cl-free" disabled></button></div>`;
   el.innerHTML = html;
   renderCleanupStats();
+  if (typeof renderDismCard === "function") renderDismCard();
 }
 function renderCleanupReport() {
   const r = S.cl.report, el = $("#clReport");
@@ -414,7 +416,8 @@ function explorerFolders() {
   const total = Math.max(1, n.size);
   const dirs = n.dirs.map(d => `<div class="lrow dir">${icon("folder")}<span class="name link" data-act="ex-in" data-name="${esc(d.name)}" title="${esc(d.path)}">${esc(d.name)}${d.denied ? ` <span class="badge b-muted">${t("explorer.denied")}</span>` : ""}</span>
     <div class="bar"><i style="width:${(d.size / total * 100).toFixed(1)}%"></i></div><span class="num">${size(d.size)}</span>
-    <span class="num small muted files">${(d.size / total * 100).toFixed(1)}%</span><span class="act">${openBtn(d.path)}${trashBtn(d.path, "ex")}</span></div>`).join("");
+    <span class="num small muted files">${(d.size / total * 100).toFixed(1)}%</span><span class="act">${openBtn(d.path)}
+    <button class="icon-btn" title="${esc((I18N[S.lang].mv || {}).nav || "")}" data-act="ex-move" data-path="${esc(d.path)}">${icon("disk")}</button>${trashBtn(d.path, "ex")}</span></div>`).join("");
   const files = n.files.length ? `<div class="section-title"><h3>${t("explorer.loose")}</h3></div>` + n.files.map(f => `<div class="lrow">${icon("file")}
     <span class="name" title="${esc(f.path)}">${esc(f.name)}</span><div class="bar"><i style="width:${(f.size / total * 100).toFixed(1)}%"></i></div>
     <span class="num">${size(f.size)}</span><span class="num small muted files">${date(f.mtime)}</span><span class="act">${openBtn(f.path)}${trashBtn(f.path, "ex")}</span></div>`).join("") +
@@ -581,6 +584,12 @@ function renderDuplicates() {
       <div class="row" style="margin-top:14px"><label class="muted">${t("dup.min")}</label><select id="duMin">${mins.map(([v, l]) => `<option value="${v}" ${u.min === v ? "selected" : ""}>${l}</option>`).join("")}</select>
         <span class="grow"></span><button class="btn primary" data-act="du-scan">${icon("copy")}${t("dup.search")}</button></div>
       <div class="note">${icon("infoc")}<div>${t("dup.how")}</div></div></div>
+     <div class="card"><div class="row"><h2 class="grow">${icon("shield")}${t("dup.backup")}</h2>
+       <label class="switch"><input type="checkbox" id="duRefOn" ${u.refOn ? "checked" : ""}><span></span></label></div>
+       <p class="lead">${t("dup.backup_d")}</p>
+       ${u.refOn ? `<div class="row">${u.ref.map((p, i) => `<span class="chip on">${icon("shield")}<span class="mono">${esc(p)}</span>
+         <span class="x" data-act="du-ref-rm" data-i="${i}">${icon("x")}</span></span>`).join("")}
+         <button class="chip" data-act="du-ref-add">${icon("plus")}${t("dup.backup_add")}</button></div>` : ""}</div>
      <div class="task hidden" id="duTask"></div><div id="duBody"></div>`;
   renderDuplicatesBody();
 }
@@ -597,7 +606,10 @@ function renderDuplicatesBody() {
     <span class="small muted">${t("dup.auto_d")}</span></div>`;
   html += r.groups.slice(0, u.shown).map((g, gi) => `<div class="group"><div class="group-head">${icon("copy")}<b>${t("dup.copies", { n: g.files.length, size: size(g.size) })}</b>
       <span class="grow"></span><span class="muted small">${size(g.wasted)}</span></div>
-      ${g.files.map(f => `<div class="group-row ${u.sel.has(f.path) ? "" : "keep"}">${checkbox("du", f.path, `data-group="${gi}"`)}<span class="path">${esc(pp(f.path))}</span>
+      ${g.files.map(f => f.ref
+        ? `<div class="group-row keep">${icon("shield")}<span class="path">${esc(pp(f.path))}</span><span class="badge b-info">${t("dup.backup_copy")}</span>
+            <span class="small muted">${date(f.mtime)}</span>${openBtn(f.path)}</div>`
+        : `<div class="group-row ${u.sel.has(f.path) ? "" : "keep"}">${checkbox("du", f.path, `data-group="${gi}"`)}<span class="path">${esc(pp(f.path))}</span>
         ${u.sel.has(f.path) ? "" : `<span class="badge b-safe">${t("dup.kept")}</span>`}<span class="small muted">${date(f.mtime)}</span>${openBtn(f.path)}</div>`).join("")}</div>`).join("");
   if (r.groups.length > u.shown) html += `<button class="btn" data-act="du-more">${t("common.show_more")} (${num(r.groups.length - u.shown)})</button>`;
   html += `<div class="sticky-actions" id="duBar">${selectionBar("du")}</div></div>`;
@@ -607,6 +619,10 @@ function duAuto() {
   const u = S.du;
   u.sel.clear();
   for (const g of u.res.groups) {
+    if (g.files.some(f => f.ref)) {  // backup mode: everything outside the backup can go
+      g.files.forEach(f => { if (!f.ref) u.sel.add(f.path); });
+      continue;
+    }
     let keep = 0;
     if (u.keep === "newest") keep = g.files.length - 1;
     if (u.keep === "shortest") keep = g.files.reduce((b, f, i) => (f.path.length < g.files[b].path.length ? i : b), 0);
@@ -619,7 +635,8 @@ async function duplicatesScan() {
   u.min = $("#duMin").value;
   const label = s => ({ "quick-hash": t("dup.quick"), "full-hash": t("dup.full") }[s.message] || t("dup.listing"));
   try {
-    const res = await runJob(api("duplicates_find", u.folders, u.min), $("#duTask"), label);
+    if (u.refOn && !u.ref.length) return toast(t("dup.backup_choose"), true);
+    const res = await runJob(api("duplicates_find", u.folders, u.min, u.refOn ? u.ref : []), $("#duTask"), label);
     if (!res) return;
     u.res = res;
     u.shown = 60;
@@ -728,6 +745,8 @@ const ACTIONS = {
   "du-pick": async () => { const p = await pickFolder(); if (p && !S.du.folders.includes(p)) { S.du.folders.push(p); renderDuplicates(); } },
   "du-rm": el => { S.du.folders.splice(+el.dataset.i, 1); renderDuplicates(); },
   "du-scan": () => duplicatesScan(),
+  "du-ref-add": async () => { const p = await pickFolder(); if (p && !S.du.ref.includes(p)) { S.du.ref.push(p); renderDuplicates(); } },
+  "du-ref-rm": el => { S.du.ref.splice(+el.dataset.i, 1); renderDuplicates(); },
   "du-auto": () => { S.du.keep = $("#duKeep").value; duAuto(); renderDuplicatesBody(); },
   "du-more": () => { S.du.shown += 60; renderDuplicatesBody(); },
 
@@ -779,7 +798,7 @@ document.addEventListener("change", e => {
     if (el.checked) {
       if (scope === "du") {
         const g = S.du.res.groups[+el.dataset.group];
-        if (g.files.every(f => f.path === p || st.sel.has(f.path))) { el.checked = false; return toast(t("dup.need_one"), true); }
+        if (!g.files.some(f => f.ref) && g.files.every(f => f.path === p || st.sel.has(f.path))) { el.checked = false; return toast(t("dup.need_one"), true); }
       }
       st.sel.add(p);
     } else st.sel.delete(p);
@@ -788,6 +807,7 @@ document.addEventListener("change", e => {
   }
   if (el.id === "clDrive") { S.cl.drive = el.value; S.cl.result = null; S.cl.report = null; renderCleanup(); }
   if (el.id === "duKeep") S.du.keep = el.value;
+  if (el.id === "duRefOn") { S.du.refOn = el.checked; S.du.res = null; renderDuplicates(); }
   CHANGE_HOOKS.forEach(fn => fn(el, e));
 });
 

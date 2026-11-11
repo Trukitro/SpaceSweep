@@ -74,7 +74,9 @@ window.I18N = {
            groups: "Grupos de duplicados", wasted: "Espacio recuperable", scanned: "Archivos revisados", keep: "Conservar",
            k_oldest: "el más antiguo", k_newest: "el más nuevo", k_shortest: "la ruta más corta", auto: "Selección automática", auto_d: "Marca todas las copias menos la que eliges conservar. Revisa antes de borrar.",
            copies: "{n} copias de {size}", kept: "se conserva", need_one: "Debes conservar al menos una copia de cada grupo.",
-           none: "No se encontraron duplicados.", choose: "Añade al menos una carpeta.", how: "Cómo funciona: compara tamaño, luego el inicio y final del archivo, y por último el contenido completo (BLAKE2). Solo aparecen archivos 100% idénticos." }
+           none: "No se encontraron duplicados.",
+           backup: "Comparar contra un respaldo", backup_d: "Activa esto si tienes un respaldo (por ejemplo en J:). Solo se listan archivos de tus carpetas que ya tienen una copia idéntica en el respaldo, y del respaldo nunca se borra nada. Así liberas C: sabiendo que la copia existe.",
+           backup_add: "Añadir carpeta de respaldo", backup_copy: "copia en el respaldo", backup_choose: "Añade la carpeta de respaldo.", choose: "Añade al menos una carpeta.", how: "Cómo funciona: compara tamaño, luego el inicio y final del archivo, y por último el contenido completo (BLAKE2). Solo aparecen archivos 100% idénticos." }
   },
   en: {
     nav: { home: "Home", cleanup: "Cleanup", explorer: "Disk explorer", downloads: "Downloads", folders: "My folders", duplicates: "Duplicates",
@@ -150,6 +152,8 @@ window.I18N = {
            groups: "Duplicate groups", wasted: "Recoverable space", scanned: "Files checked", keep: "Keep",
            k_oldest: "the oldest", k_newest: "the newest", k_shortest: "the shortest path", auto: "Auto-select", auto_d: "Selects every copy except the one you choose to keep. Review before deleting.",
            copies: "{n} copies of {size}", kept: "kept", need_one: "You must keep at least one copy of each group.",
-           none: "No duplicates found.", choose: "Add at least one folder.", how: "How it works: compares size, then the start and end of each file, then the full contents (BLAKE2). Only 100% identical files are listed." }
+           none: "No duplicates found.",
+           backup: "Compare against a backup", backup_d: "Turn this on if you have a backup (for example on J:). Only files in your folders that already have an identical copy in the backup are listed, and nothing in the backup is ever deleted. Free up C: knowing the copy exists.",
+           backup_add: "Add backup folder", backup_copy: "copy in the backup", backup_choose: "Add the backup folder.", choose: "Add at least one folder.", how: "How it works: compares size, then the start and end of each file, then the full contents (BLAKE2). Only 100% identical files are listed." }
   }
 };

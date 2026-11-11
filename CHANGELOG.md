@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0 — 2026-11-11
+
+- **Duplicates against a backup**: point at your backup folder (for example on J:). Only files that already have an identical copy there are listed, and nothing in the backup is ever offered for deletion.
+- **Move to another drive**: copies a heavy folder to another drive, verifies files and bytes, then swaps the original for a directory junction, so programs keep the same path and C: gets the space back. A failure at any step leaves the original untouched. There's a lock test for files in use and a list of moved folders with *Bring back*. It suggests typical candidates (LM Studio, Ollama, Hugging Face, Android SDK, Rust/Cargo, Gradle, Maven, NuGet) and adds a *move* button to every folder in Disk explorer.
+- **WinSxS through DISM** (administrator): *Analyze* shows the real component-store size and whether cleanup is recommended; *Clean* runs `StartComponentCleanup`, keeping installed updates uninstallable.
+
 ## 0.4.0 — 2026-11-11
 
 - **Programs**: every installed program with size, which is measured when Windows doesn't record it, plus install date and drive. Repeated versions are grouped (Windows SDK, Visual Studio Build Tools, Java, Python, SSMS…), and the page says which groups are normal and must stay (Visual C++ redistributables, .NET runtimes). Uninstall opens the program's own uninstaller, re-checked against the registry first.

@@ -122,9 +122,41 @@ class Api:
     def folder_analyze(self, folder):
         return self._jobs.start("analyze", analyzer.analyze, self._folder(folder))
 
-    def duplicates_find(self, folders, min_mb=1):
+    def duplicates_find(self, folders, min_mb=1, reference=None):
         folders = [self._folder(f) for f in folders]
-        return self._jobs.start("duplicates", duplicates.find, folders, int(float(min_mb) * 1024 * 1024))
+        reference = [self._folder(f) for f in (reference or [])]
+        return self._jobs.start("duplicates", duplicates.find, folders, int(float(min_mb) * 1024 * 1024), reference)
+
+    # ------------------------------------------------------------ move to another drive (v0.5)
+    def move_check(self, src, dest_root):
+        from . import mover
+        size, files, target = mover.check(src, dest_root)
+        return {"size": size, "files": files, "target": target}
+
+    def move_run(self, src, dest_root):
+        from . import mover
+        return self._jobs.start("move", mover.move, src, dest_root)
+
+    def move_restore(self, src):
+        from . import mover
+        return self._jobs.start("move-restore", mover.restore, src)
+
+    def move_list(self):
+        from . import mover
+        return mover.list_moves()
+
+    def move_suggestions(self):
+        from . import mover
+        return self._jobs.start("move-suggest", lambda job: mover.suggestions())
+
+    # ------------------------------------------------------------ component store (v0.5)
+    def dism_analyze(self):
+        from . import winmaint
+        return self._jobs.start("dism-analyze", winmaint.analyze)
+
+    def dism_cleanup(self):
+        from . import winmaint
+        return self._jobs.start("dism-clean", winmaint.cleanup)
 
     # ------------------------------------------------------------ history (v0.2)
     def history_roots(self):

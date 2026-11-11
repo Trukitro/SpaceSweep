@@ -65,9 +65,16 @@ def _hash_groups(groups, fn, job, label, weight_start, weight_span):
     return {k: v for k, v in out.items() if len(v) > 1}
 
 
-def find(job, folders, min_size=1024 * 1024):
+def find(job, folders, min_size=1024 * 1024, reference=()):
+    """Exact duplicates among `folders`.
+
+    With `reference` folders (a backup, usually on another drive) only files that
+    also exist in the reference are reported, and reference files are never
+    offered for deletion: "this is already backed up, you can free it here".
+    """
     by_size = defaultdict(list)
     meta = {}
+    is_ref = set()
     seen_roots = set()
     job.update(message="listing", progress=-1)
     count = 0
@@ -75,7 +82,8 @@ def find(job, folders, min_size=1024 * 1024):
     def prune(entry):
         return entry.name.lower() in SKIP_DIRS
 
-    for folder in folders:
+    # Reference folders first, so a file inside both lists counts as reference (never deletable).
+    for folder, ref in [(f, True) for f in reference] + [(f, False) for f in folders]:
         root = os.path.normcase(os.path.abspath(folder))
         if root in seen_roots or not os.path.isdir(folder):
             continue
@@ -88,12 +96,18 @@ def find(job, folders, min_size=1024 * 1024):
                 continue  # overlapping folders were selected
             meta[key] = (path, size, mtime)
             by_size[size].append(key)
+            if ref:
+                is_ref.add(key)
             count += 1
             if count % 1000 == 0:
                 job.update(count=count)
     job.update(count=count)
 
-    candidates = {s: p for s, p in by_size.items() if len(p) > 1}
+    if reference:
+        candidates = {s: p for s, p in by_size.items()
+                      if any(k in is_ref for k in p) and any(k not in is_ref for k in p)}
+    else:
+        candidates = {s: p for s, p in by_size.items() if len(p) > 1}
     # Drop hard links: same file id means same data on disk.
     for size, keys in list(candidates.items()):
         ids, unique = set(), []
@@ -117,11 +131,17 @@ def find(job, folders, min_size=1024 * 1024):
 
     groups = []
     for (_, digest), keys in stage3.items():
-        files = sorted(({"path": meta[k][0], "mtime": meta[k][2]} for k in keys), key=lambda f: f["mtime"])
+        refs = [k for k in keys if k in is_ref]
+        if reference and (not refs or len(refs) == len(keys)):
+            continue
+        files = sorted(({"path": meta[k][0], "mtime": meta[k][2], "ref": k in is_ref} for k in keys),
+                       key=lambda f: (not f["ref"], f["mtime"]))
         size = meta[keys[0]][1]
-        groups.append({"hash": digest, "size": size, "count": len(files), "wasted": size * (len(files) - 1), "files": files})
+        freeable = len(keys) - len(refs) if reference else len(keys) - 1
+        groups.append({"hash": digest, "size": size, "count": len(files), "wasted": size * freeable, "files": files})
     groups.sort(key=lambda g: g["wasted"], reverse=True)
     return {
+        "reference": list(reference),
         "folders": list(folders),
         "scanned": count,
         "groups": groups[:2000],

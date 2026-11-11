@@ -29,6 +29,9 @@ It is a small native window (pywebview + HTML/CSS/JS) on top of a pure-Python en
 - **Downloads**: finds exact copies (`setup (1).exe`), unfinished downloads, old installers and zips you already extracted. Sorts loose files into folders by type, **with undo**.
 - **My folders**: analyzes Documents, Pictures, Videos, Music, Desktop or any folder: space per file type, biggest subfolders, biggest files, big files untouched for 2+ years. It flags likely leftovers: `node_modules`, Python virtual environments, Rust `target` folders, `.bak` backups you already zipped, Office lock files, big logs. It can also sort loose photos and videos into `Year\Year-Month` folders using the camera's EXIF date, **with undo**.
 - **Duplicates**: byte-for-byte identical files across any set of folders. Files are compared by size, then the first and last 64 KB, then a full BLAKE2 hash. Hard links are ignored, and at least one copy of each group is always kept.
+- **Move to another drive**: copies a heavy folder (AI models, SDKs, build caches) to another drive, verifies it, and leaves a directory junction behind, so programs keep working with the same path. It can be undone with *Bring back*.
+- **Duplicates against a backup**: frees files on C: that already have an identical copy in your backup folder. The backup is never touched.
+- **WinSxS with DISM** (admin): the official, safe way to shrink the Windows component store.
 - **Automatic upkeep**: optional Windows scheduled tasks, with no resident process and no admin rights. A daily low-space notification, a weekly cleanup of the safe group, and Downloads rules (old installers, unfinished downloads and exact copies go to the Recycle Bin), with a log of everything that ran.
 - **Safe by default**: your own files go to the Recycle Bin unless you tick *delete permanently*. Caches are deleted for good because they rebuild themselves. Files in use are skipped, never forced, and SpaceSweep refuses to delete drive roots, Windows folders or your profile folders.
 - **Light / dark / system theme** and **Spanish / English**, both remembered.
@@ -100,6 +103,8 @@ spacesweep/
   duplicates.py  3-stage exact duplicate finder
   history.py     snapshots, "what grew" comparison, free-space log
   inventory.py   programs, games, developer tools, local AI models
+  mover.py       move a folder to another drive behind a junction (verified, undoable)
+  winmaint.py    WinSxS analysis and cleanup through DISM
   automation.py  scheduled tasks (Task Scheduler XML), notifications, Downloads rules
   devprojects.py regenerable folders in code projects
   imaging.py     PNG/ICO encoding without Pillow
